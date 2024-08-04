@@ -19,8 +19,8 @@
 			>
 				<span
 					class="text-5xl text-transparent bg-gradient-to-r from-primary to-gray-400 bg-clip-text md:text-6xl"
-					>P</span
-				>rabhu
+					>C</span
+				>amilla H
 			</a>
 			{#if openToWork}
 				<div class="flex items-center border border-border rounded-xl px-2 gap-3">
