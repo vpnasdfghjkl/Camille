@@ -36,23 +36,23 @@ export const routes: routesType[] = [
 // social icons with links
 export const socials: socialsType[] = [
 	{
-		href: 'https://github.com/prabhukiran8790',
+		href: 'https://github.com/vpnasdfghjkl',
 		icon: Github,
 		display: 'GitHub'
 	},
+	// {
+	// 	href: 'https://linkedin.com/in/PrabhuKiranKonda',
+	// 	icon: LinkedIn,
+	// 	display: 'LinkedIn'
+	// },
 	{
-		href: 'https://linkedin.com/in/PrabhuKiranKonda',
-		icon: LinkedIn,
-		display: 'LinkedIn'
-	},
-	{
-		href: 'https://x.com/prabhukirantwt',
+		href: 'https://x.com/PcP2LUckf2WAXKl',
 		icon: X,
 		display: 'Twitter',
 		class: 'h-4 w-4'
 	},
 	{
-		href: 'mailto:prabhukiran426@gmail.com',
+		href: 'mailto:xiaohan20000811@gmail.com',
 		icon: Mail,
 		display: 'Mail',
 		class: 'h-4 w-4'
@@ -60,7 +60,7 @@ export const socials: socialsType[] = [
 	{
 		href: '/Prabhu Kiran Konda Resume.pdf',
 		icon: FileText,
-		display: 'Resume'
+		display: 'Resume Example',
 	}
 ];
 
@@ -72,14 +72,14 @@ export const getSocials = ({ exclude }: { exclude?: string } = {}): socialsType[
 };
 
 export const githubConfig = {
-	username: 'PrabhuKiran8790',
-	repo: 'prabhukirankonda-portfolio',
+	username: 'vpnasdfghjkl',
+	repo: 'Camille',
 	branch: 'main'
 };
 
 export const author = {
-	name: 'Prabhu Kiran Konda',
-	tagline: 'I train machines to learn and build software to solve problems.',
+	name: 'Camille X',
+	tagline: '不自量力的还手，直至死方休',
 	avatar: `https://github.com/${githubConfig.username}.png`,
 	twt: 'prabhukirantwt'
 };

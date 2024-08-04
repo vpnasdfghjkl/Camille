@@ -45,6 +45,9 @@ Welcome to my personal website built with SvelteKit, Tailwind CSS, Shadcn-Svelte
 - **Shadcn-Svelte**: Accessible and customizable components that you can copy and paste into your apps.
 - **MDsveX**: A Markdown preprocessor for Svelte.
 
+## tips
+1. .env文件的存在会影响能否找到blog文件，否则会报找不到blog的错误
+
 ## Getting Started
 
 **Clone the repository:**
@@ -55,3 +58,4 @@ Welcome to my personal website built with SvelteKit, Tailwind CSS, Shadcn-Svelte
    ````
 
 see the blog to get started quickly. [Blog Link](https://prabhukirankonda.vercel.app/blog/getting-started) 
+

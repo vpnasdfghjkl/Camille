@@ -1,5 +1,5 @@
 <script>
-	import ProfilePicture from '$lib/assets/profile_picture.jpg';
+	import ProfilePicture from '$lib/assets/SongJia.png';
 	import { SocialButtons } from '$lib/components/site';
 	import { whatsNew } from '$lib/config';
 	import { Mailbox } from 'lucide-svelte';
@@ -31,12 +31,14 @@
 			</div>
 
 			<h1 class="font-bold md:text-xl">Hi, I'm</h1>
-			<h1 class="text-2xl font-bold md:text-5xl">Prabhu Kiran Konda</h1>
+			<h1 class="text-2xl font-bold md:text-5xl bg-gradient-to-r from-orange-500 to-purple-500 text-transparent bg-clip-text">
+				PROGRAM CAMILLE
+			</h1>
 			<p>
-				a software developer from India. I specialize in Python, Machine Learning, and full stack
-				development. I’m currently seeking software developer roles to further my career. In my free
-				time, I enjoy writing technical blogs and sharing my journey with others. If you'd like to
-				get in touch, feel free to reach out to me.
+				a postgraduate student from China. I specialize in Robotics Learning. I want to be a full-stack
+				developer. I’m currently seeking software developer roles to further my career. In my free time, I
+				enjoy writing technical blogs and sharing my journey with others. If you'd like to get in touch, feel
+				free to reach out to me.
 			</p>
 			<SocialButtons />
 		</div>
