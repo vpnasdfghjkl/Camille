@@ -47,7 +47,15 @@ Welcome to my personal website built with SvelteKit, Tailwind CSS, Shadcn-Svelte
 
 ## tips
 1. .env文件的存在会影响能否找到blog文件，否则会报找不到blog的错误
-
+2. proxy:
+  ```txt
+    powershell
+        # 当前 shell 的代理
+        $env:HTTP_PROXY="http://127.0.0.1:1080"
+    cmd
+        rem 当前 shell 的代理
+        set http_proxy=http://127.0.0.1:1080
+    ```
 ## Getting Started
 
 **Clone the repository:**
