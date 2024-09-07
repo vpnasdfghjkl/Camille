@@ -9,8 +9,9 @@ tags:
 image: '/posts/imitation-learning/octo.png'
 draft: false
 ---
-## datas
+## data
 1. eef: 人类看eef图可以知道机器人末端的轨迹，看joint不行
+2. rgb+bgr模拟深度？
 ### command and state
 ![kuavo_traj_q_v_tua](/posts/imitation-learning/pick_up_something_2024-08-13-15-11-01.png)
 ## pretrain
