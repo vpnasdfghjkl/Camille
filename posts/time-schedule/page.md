@@ -13,6 +13,8 @@ draft: false
 ["emoj_web"](https://www.mlxz.top/index.php/archives/157/)
 `https://www.mlxz.top/index.php/archives/157/`
 
+今天是2024.9.7，离2025.4.1还有206天
+
 | 时间 | 事务 |
 | --- | --- |
 | 7:30 | 😅起床 |
