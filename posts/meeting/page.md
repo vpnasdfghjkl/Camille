@@ -43,12 +43,12 @@ draft: false
   
 - 遇到的问题及解决方法
   - 暂时没大问题，主要是一些环境配置问题，已解决。
-  - 实验没有机器人 -> 学习仿真环境
+  - 没有机器人 -> 学习仿真环境
   
 - 下周工作计划安排
   - 将diffusion policy部署demo，测试通信
     - docker + ros
-  - 研究深度和触觉的编码设计(简单编码比与训练好)
-    - RGBD or Pointcloud ?
-    - touch : low dim or encoder ?
+  - 研究深度和触觉的编码设计
+    - RGBD or Pointcloud 
+    - touch : low dim or encoder 
   - 3d diffusion论文，代码
