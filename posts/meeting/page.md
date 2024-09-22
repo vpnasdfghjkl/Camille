@@ -38,7 +38,7 @@ draft: false
   - [ ] 3d diffusion论文，代码。
 - 本周工作主要内容(详细介绍)
   - rosbag->zarr数据集转换代码
-  - 修改diffusion代码，添加fake_touch维度
+  - 修改diffusion代码，添加fake_touch状态
 
   
 - 遇到的问题及解决方法
