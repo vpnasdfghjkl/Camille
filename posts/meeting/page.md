@@ -38,8 +38,7 @@ draft: false
   - [ ] 3d diffusion论文，代码。
 - 本周工作主要内容(详细介绍)
   - rosbag->zarr数据集转换代码
-  - 修改diffusion代码，添加fake_touch状态
-
+  - 修改diffusion代码，添加fake_touch维度 ![alt text](<Screenshot from 2024-09-21 22-27-37.png>)
   
 - 遇到的问题及解决方法
   - 暂时没大问题，主要是一些环境配置问题，已解决。
@@ -52,3 +51,6 @@ draft: false
     - RGBD or Pointcloud 
     - touch : low dim or encoder 
   - 3d diffusion论文，代码
+
+## 2024-09-27， monthly meeting report
+框架技术路线，ppt
