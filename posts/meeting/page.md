@@ -6,7 +6,7 @@ image:
     - ""
 tags: 
     - Meeting
-draft: false
+draft: True
 
 ---
 
@@ -54,3 +54,19 @@ draft: false
 
 ## 2024-09-27， monthly meeting report
 框架技术路线，ppt
+- 上月工作计划
+  - [X] 阅读diffusion代码, 在老数据集跑通训练。
+  - [X] 添加fake_touch模态(low_dim), 跑通训练。
+  - [ ] diffusion部署和测试
+  - [ ] 3d diffusion论文，代码
+- 本月工作主要内容(详细介绍)
+  - 数据集格式转换
+  - 修改diffusion代码，添加fake_touch维度
+  - 编写部署的代码，docker打包
+  - 使用离线数据集验证4080训练diffusion 10h的结果，至少离线(仿真)比octo的好![alt text](image.png)
+  
+- 遇到的问题及解决方法
+  - 
+- 下月工作计划安排
+  - 解决部署过程中的问题并优化部署代码
+  - 3d diffusion论文，代码
