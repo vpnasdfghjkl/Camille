@@ -30,3 +30,9 @@ draft: false
 | --- | --- |
 |difussion仿真，vla论文+训练，octo训练(2window，diffusion head，primary)📚|2024.9.7-2024.9.10|
 
+
+
+
+
+`Tell me about your story, and how you got here.`  
+`Everyday is the most important day, put on the most beautiful socks and the greatest courage`
