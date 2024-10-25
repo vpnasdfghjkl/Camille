@@ -50,3 +50,8 @@ nvcc -V
 
 5. follow the octo Installation:   
     https://github.com/octo-models/octo
+
+
+## error experience
+1. docker使用宿主显示器
+xhost +local:docker
