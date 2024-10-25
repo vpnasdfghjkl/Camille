@@ -9,6 +9,53 @@ tags:
 draft: True
 
 ---
+## 2024-10-18, weekly meeting report
+- 上周工作计划
+  - [X] 仿真平台验证diffusion policy![alt text](output.mp4)
+
+- 本周工作主要内容(详细介绍)
+  - 在公开的数据集上验证200个episode训练的diffusion policy，成功率有90%![alt text](image-2.png)
+
+- 下周工作计划安排
+  - 21楼机器部署diffusion policy
+  - 修改diffusion policy代码，在仿真验证效果
+  - [RDT](https://github.com/thu-ml/RoboticsDiffusionTransformer?tab=readme-ov-file)![alt text](image-1.png)
+
+
+## 2024-10-16, with scir team
+
+
+## 2024-10-11, weekly meeting report
+- 上周工作计划
+  - [ ] 实机docker部署diffusion policy -> 深圳没空余机器
+  - [X] 仿真平台搭建和代码部署
+
+- 本周工作主要内容(详细介绍)
+  - docker部署diffusion policy, 
+  - 使用离线数据集验证4080训练diffusion 10h的结果，至少离线(仿真)比octo的好![alt text](image.png)
+  - 仿真平台(IL sim : robomimic, mimicgen(JD), robosuite)
+    ![alt text](<Screenshot from 2024-10-11 17-17-20.png>)
+  
+- 遇到的问题及解决方法
+  - 没有机器人 -> 仿真环境
+
+- 下周工作计划安排
+  - 将diffusion policy部署到仿真环境中
+
+- meeting rec
+  - 每周两篇论文，ppt分享一篇，每周来3天
+  - 减少数据集试试diffusion policy
+  - 看看论文为什么transformer+diffusion并不好，而纯diffusion policy好 
+  - 使用力的导 -> 作为条件
+  - 预处理图片使用语义condition的背景去噪
+
+
+
+
+
+
+
+
 
 ```markdown
 1. 周例会内容要点格式(文档形式)
@@ -77,19 +124,3 @@ draft: True
   - 对标什么改进
 
 
-## 2024-10-11, weekly meeting report
-- 上周工作计划
-  - [ ] 实机docker部署diffusion policy -> 深圳没空余机器
-  - [X] 仿真平台搭建和代码部署
-
-- 本周工作主要内容(详细介绍)
-  - docker部署diffusion policy, 
-  - 使用离线数据集验证4080训练diffusion 10h的结果，至少离线(仿真)比octo的好![alt text](image.png)
-  - 仿真平台(IL sim : robomimic, mimicgen(JD), robosuite)
-    ![alt text](<Screenshot from 2024-10-11 17-17-20.png>)
-  
-- 遇到的问题及解决方法
-  - 没有机器人 -> 仿真环境
-
-- 下周工作计划安排
-  - 将diffusion policy部署到仿真环境中
