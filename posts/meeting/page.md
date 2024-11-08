@@ -9,6 +9,22 @@ tags:
 draft: True
 
 ---
+
+## 2024-11-01, monthly meeting report
+### tools
+1. cuda docker
+   1. docker安装：https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/
+   2. nvidia container toolkit安装：https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+      - issue(no release version):https://github.com/NVIDIA/nvidia-container-toolkit/issues/89, https://blog.csdn.net/lyx_323/article/details/141168405
+   3. cuda11.8 ubuntu20.04 cudnn8 docker hub: https://hub.docker.com/r/nvidia/cuda/tags?name=11.8
+2. 哈深论文模板
+   1. 哈深教务部学生培养：http://due.hitsz.edu.cn/xwgl/ssxwpy/ktyzj.htm
+   2. 【通知】关于2023年春季学期硕士研究生学位论文中期检查及答辩工作安排的通知http://due.hitsz.edu.cn/info/1210/4794.htm
+   3. e.g.:研究生中期模板：http://due.hitsz.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1481660265&wbfileid=11373754 
+3. Zotero
+   1. 翻译插件(pdf-translate)：https://zotero-chinese.com/user-guide/plugins/translate, https://blog.csdn.net/Rong_Gong/article/details/124385746
+   2. google插件(Zotero Connector)：https://chromewebstore.google.com/detail/zotero-connector/ekhagklcjbdpajgpjgmbionohlpdbjgc?pli=1
+   
 ## 2024-10-25, weekly meeting report
 - leetcode daily + 2 top interview 150
 - 写dataset loader
