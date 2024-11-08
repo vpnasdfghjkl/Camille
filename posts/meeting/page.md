@@ -10,6 +10,29 @@ draft: True
 
 ---
 
+
+## 2024-11-08, weekly meeting report
+### 上周工作计划
+  - [ ] 修改diffusion policy, state_vec and low_dim MLP
+  - [ ] kuavo 上测试通信
+  - [ ] 读论文
+
+### 下周计划:
+  - [ ] 读论文
+  - [ ] 采数据
+
+### paper reading
+[3D Diffuser Actor: Policy Diffusion with 3D Scene Representations](https://3d-diffuser-actor.github.io/)
+
+
+
+
+
+
+
+
+
+
 ## 2024-11-01, monthly meeting report
 ### tools
 1. cuda docker
