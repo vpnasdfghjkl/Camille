@@ -10,6 +10,11 @@ draft: True
 
 ---
 ## 2024-10-25, weekly meeting report
+- leetcode daily + 2 top interview 150
+- 写dataset loader
+- brain practice
+- 对于特征提取,如何把提取的特征放入模型训练,low_dim与非low_dim的处理
+
 <!-- ### rdt
 #### prev acknowledge
 1. diffusion model 

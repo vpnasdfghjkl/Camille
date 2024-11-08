@@ -48,6 +48,9 @@ draft: false
 
 - nn.Conv1d(in_channels, out_channels, kernel_size, stride, padding), nn.Conv2d, nn.Linear(),
 
-- Conditional Denoise: $P(x_{t-1}|x_t)= ||{\epsilon} - f_{\theta}(x_t, t, condition)|| , condition \in \{\text{text}, \text{CLIP}, \text{classifier}, \text{image}\} $
+- Conditional Denoise:
+```math
+P(x_{t-1}|x_t) = ||\epsilon - f_{\theta}(x_t, t, \text{condition})||, \text{condition} \in \{\text{text}, \text{CLIP}, \text{classifier}, \text{image}\}
+```
 
 - VAE IL, DIFFUSION IL, BC_RNN IL , (octo IL)?
