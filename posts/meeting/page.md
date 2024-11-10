@@ -10,32 +10,38 @@ draft: True
 
 ---
 
+## Daily Arange <- 鳗鱼， run7246, KuavoEnv(4), leetcode7123456, 
+<!-- 1. 7-8 run -->
+<!-- 6. 17-19 鳗鱼 * 100 -->
+1. 730 - 8:30 run + brkf
+2. 900 1 lt
+3. 1000 1.5 paper reading 
+4. 1230 2 kuavo env 
+5. 1430 2 鳗鱼
+6. 1630 1 robomimic code reading(replace encoder with SegModel like vlmaps using)
+7. 19:00 1.5 kuavo env
+8. 20:30 1.5 review lt
 
 ## 2024-11-08, weekly meeting report
 ### 上周工作计划
-  - [ ] 修改diffusion policy, state_vec and low_dim MLP
+  - [X] 修改diffusion policy, state_vec and low_dim MLP
   - [ ] kuavo 上测试通信
-  - [ ] 读论文
+  - [X] 读论文
 
 ### 下周计划:
   - [ ] 读论文
-  - [ ] 采数据
+  - [ ] kuavo采数据
+  - [ ] kuavo部署
 
 ### paper reading
 [3D Diffuser Actor: Policy Diffusion with 3D Scene Representations](https://3d-diffuser-actor.github.io/)
-
-
-
-
-
-
-
+![alt text](image-3.png)
 
 
 
 ## 2024-11-01, monthly meeting report
 ### tools
-1. cuda docker
+1. cuda docker  
    1. docker安装：https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/
    2. nvidia container toolkit安装：https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
       - issue(no release version):https://github.com/NVIDIA/nvidia-container-toolkit/issues/89, https://blog.csdn.net/lyx_323/article/details/141168405
