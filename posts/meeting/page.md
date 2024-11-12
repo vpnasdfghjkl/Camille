@@ -11,16 +11,19 @@ draft: True
 ---
 
 ## Daily Arange <- 鳗鱼， run7246, KuavoEnv(4), leetcode7123456, 
-<!-- 1. 7-8 run -->
-<!-- 6. 17-19 鳗鱼 * 100 -->
-1. 730 - 8:30 run + brkf
-2. 900 1 lt
-3. 1000 1.5 paper reading 
-4. 1230 2 kuavo env 
-5. 1430 2 鳗鱼
-6. 1630 1 robomimic code reading(replace encoder with SegModel like vlmaps using)
-7. 19:00 1.5 kuavo env
-8. 20:30 1.5 review lt
+<!-- 7. 7-8 run -->
+<!-- 7. 17-19 鳗鱼 * 100 -->
+<!-- 1. 730 - 8:30 run + brkf -->
+<!-- 1. 1000 1.5 paper reading  -->
+<!-- 1. 1630 1 robomimic code reading(replace encoder with SegModel like vlmaps using) -->
+<!-- 1. 20:30 1.5 review lt -->
+
+2. 1030-1100 run
+2. 11-13 bf/luch lt
+2. 13-15.5robomimic code reading(replace encoder with SegModel like vlmaps using)
+2. 15.5-17 找到鳗鱼的出生地银鳗和2cm的鳗鱼，肉团蚯蚓钓鱼，鳗鱼的没落， 逆流水平游泳 + 
+2. 19-21 collect data 
+2. 双城之战
 
 ## 2024-11-08, weekly meeting report
 ### 上周工作计划
