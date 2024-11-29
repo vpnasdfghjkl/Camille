@@ -1,32 +1,45 @@
+import heapq
 from typing import List
 class Solution:
-    def singleNonDuplicate(self, nums: List[int]) -> int:
-        i, j = 0, len(nums) - 1
-        while i <= j:
-            # if i == j :
-            #     return nums[i]
-            mid_idx = (i + j) // 2
-            mid_v = nums[mid_idx]
-            right_v, left_v = None, None
-            if mid_idx + 1 < len(nums):
-                right_v = nums[mid_idx + 1]
-            if mid_idx - 1 >= 0:
-                left_v = nums[mid_idx - 1]
-            if right_v == None or left_v == None:
-                return mid_v
-            else:
-                if mid_v == right_v:
-                    if (j +  1 - mid_idx) % 2 == 0:
-                        j = mid_idx - 1
-                    else:
-                        i = mid_idx
-                elif mid_v == left_v:
-                    if (j - mid_idx) % 2 == 0:
-                        j = mid_idx
-                    else:
-                        i = mid_idx + 1
+    def smallestRange(self, nums: List[List[int]]) -> List[int]:
+
+        
+        for i in range(len(nums)):
+            for j in range(len(nums[i])):
+                nums[i][j] = (nums[i][j], i)
+        # for i in range(len(nums)):
+        #     all_list.extend(nums[i])
+        all_sorted = list(heapq.merge(*nums))
+        # comp = []
+        # for i in range(len(nums)):
+        #     comp.append((0, len(nums[i])))
+        # while 
+
+        print(all_sorted)
+        i, j = 0, len(nums)
+        ret = []
+        std_w_set = set([i for i in range(len(nums))])
+        cur_len = 10e5
+        cur_ret = None
+        while j <= len(all_sorted):
+            cur_w_set = set([all_sorted[m][1] for m in range(i, j)])
+            if cur_w_set == std_w_set:
+                if all_sorted[j-1][0] - all_sorted[i][0] < cur_len:
+                    cur_len = all_sorted[j-1][0] - all_sorted[i][0]
+                    cur_ret = [all_sorted[i][0], all_sorted[j-1][0]]
+                elif all_sorted[j-1][0] - all_sorted[i][0] == cur_len:
+                    if all_sorted[i][0] < cur_ret[0]:
+                        cur_ret = [all_sorted[i][0], all_sorted[j-1][0]]
+                # ret.append((all_sorted[j-1][0] - all_sorted[i][0],all_sorted[i][0]))
+                if j - i == len(nums):
+                    i += 1
+                    j += 1
                 else:
-                    return mid_v
-                
+                    i += 1
+            elif cur_w_set < std_w_set:
+                j += 1
+       
+        return cur_ret
+        
 s = Solution()
-print(s.singleNonDuplicate([0,1,1]))
+print(s.smallestRange([[4,10,15,24,26],[0,9,12,20],[5,18,22,30]]))
