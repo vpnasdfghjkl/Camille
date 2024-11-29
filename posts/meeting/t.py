@@ -1,32 +1,29 @@
 from typing import List
+from math import inf
+
 class Solution:
-    def singleNonDuplicate(self, nums: List[int]) -> int:
-        i, j = 0, len(nums) - 1
-        while i <= j:
-            # if i == j :
-            #     return nums[i]
-            mid_idx = (i + j) // 2
-            mid_v = nums[mid_idx]
-            right_v, left_v = None, None
-            if mid_idx + 1 < len(nums):
-                right_v = nums[mid_idx + 1]
-            if mid_idx - 1 >= 0:
-                left_v = nums[mid_idx - 1]
-            if right_v == None or left_v == None:
-                return mid_v
-            else:
-                if mid_v == right_v:
-                    if (j +  1 - mid_idx) % 2 == 0:
-                        j = mid_idx - 1
-                    else:
-                        i = mid_idx
-                elif mid_v == left_v:
-                    if (j - mid_idx) % 2 == 0:
-                        j = mid_idx
-                    else:
-                        i = mid_idx + 1
-                else:
-                    return mid_v
-                
+    def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+        g = [[inf for _ in range(n)] for _ in range(n)]  # 邻接矩阵
+        for x, y, d in times:
+            g[x - 1][y - 1] = d
+
+        dis = [inf] * n
+        ans = dis[k - 1] = 0
+        done = [False] * n
+        while True:
+            x = -1
+            for i, ok in enumerate(done):
+                if not ok and (x < 0 or dis[i] < dis[x]):
+                    x = i
+            if x < 0:
+                return ans  # 最后一次算出的最短路就是最大的
+            if dis[x] == inf:  # 有节点无法到达
+                return -1
+            ans = dis[x]  # 求出的最短路会越来越大
+            done[x] = True  # 最短路长度已确定（无法变得更小）
+            for y, d in enumerate(g[x]):
+                # 更新 x 的邻居的最短路
+                dis[y] = min(dis[y], dis[x] + d)
+
 s = Solution()
-print(s.singleNonDuplicate([0,1,1]))
+print(s.networkDelayTime([[2,1,1],[2,3,1],[3,4,1]], 4, 2))  # 2
