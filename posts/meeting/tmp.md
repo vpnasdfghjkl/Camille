@@ -15,3 +15,11 @@
 
 3. lt
 3. 采集数据，写ppt
+
+## Daily Arange(1118-1125) <- 鳗鱼， run7246, leetcode7123456, resume
+1. lt 
+1. dataset 
+1. collect data 
+1. manyu 
+1. CPC Tencent Meeting https://meeting.tencent.com/dm/fpvM3sDK8XPh
+1. collect data 930

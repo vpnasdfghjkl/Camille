@@ -12,6 +12,39 @@ draft: True
 
 
 
+## 2024-11-29, weekly meeting report
+### 上周工作计划
+  - [X] 采集KuavoToy数据, 训练
+  - [X] kuavo manipulation README.md
+    ![alt text](image-5.png)
+    ![alt text](image-6.png)
+### 下周计划:
+  - [ ] KuavoToy部署
+  - [ ] 3D感知数据集(基准坐标系选择, 室内场景下固定相机点云)
+  - [ ] 3D算法代码实现
+  - [ ] 读3d论文
+
+### suffer
+  multi_cams,相机标定对齐
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 2024-11-15, weekly meeting report
 ### 上周工作计划
