@@ -18,6 +18,9 @@ draft: True
   - [X] kuavo manipulation README.md
     ![alt text](image-5.png)
     ![alt text](image-6.png)
+    ```Note:two cams order```
+    
+
 ### 下周计划:
   - [ ] KuavoToy部署
   - [ ] 3D感知数据集(基准坐标系选择, 室内场景下固定相机点云)
