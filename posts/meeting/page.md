@@ -10,7 +10,21 @@ draft: True
 
 ---
 
+## 2024-11-29, weekly meeting report
+### 上周工作计划
+  - [X] 部署KuavoToy模型：
+    joint:
+    eef:(明天弄)
+  
+  - [X] 3d转换点云
+  - [ ] 接入新的逆解算法
+  - [ ] 读论文
 
+
+### 下周计划:
+  - [ ] 采集3d数据
+  - [ ] 训练3d模型，修改2d模型测试
+  - [ ] 读论文
 
 ## 2024-11-29, weekly meeting report
 ### 上周工作计划
