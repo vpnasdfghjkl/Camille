@@ -15,21 +15,9 @@ draft: True
 1. 点云数据集
 
 ### 下周
+1. lejuhub
 2. 工具链论文
 
-
-
-
-
-## 2024-11-29, weekly meeting report
-### 上周工作计划
-  - [X] 部署KuavoToy模型：
-    joint:
-    eef:(明天弄)
-  
-  - [X] 3d转换点云
-  - [ ] 接入新的逆解算法
-  - [ ] 读论文
 
 
 ## 2024-11-29, weekly meeting report
