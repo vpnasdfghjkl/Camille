@@ -10,16 +10,61 @@ draft: True
 
 ---
 
+## 2024-11-29, weekly meeting report
+### 上周工作计划
+  - [X] 部署KuavoToy模型,
+    - 也会空抓，但是不会没有东西也去抓，局部特征不明显或者分辨率不够。(零点位置，轮数不够)
+    - <video controls src="KKKKuavo.mp4" title="Title"></video>
+  - [X] 机器逆解更新
+  - [X] 点云数据获取 
+    - ![alt text](<2024-12-07 19-03-28 的屏幕截图.png>)
+
+### suffer: 
+  **对齐到机器人末端坐标系**， **头部相机线**， **头部定位**
+
+### 下周计划:
+  - [ ] 点云数据收集,
+  - [ ] 3D算法代码实现
+  - [ ] 读3d论文
+
+
+
+- 调0点
+- 背景，人干扰 - 测试
+- 局部特征(分割编码)
+
+推理速度
+物体， robot特征，
+
+robot,物体 空间方位 <- 0 position
+
+**采训部**
+
+
+
+
+
+点云，本体感知约束, 局部信息(硬件，软)  -> IL算法
+
+
+
+
+
+
+
+
+
 
 
 ## 2024-11-29, weekly meeting report
 ### 上周工作计划
-  - [X] 采集KuavoToy数据, 训练
-  - [X] kuavo manipulation README.md
+  - [X] 采集KuavoToy数据, 训练 > 
+  - [X] kuavo manipulation README.md  
+    ```Note: wrong cams order```
     ![alt text](image-5.png)
     ![alt text](image-6.png)
 ### 下周计划:
-  - [ ] KuavoToy部署
+  - [ ] KuavoToy部署, 看下不同ckpt效果, 记录
   - [ ] 3D感知数据集(基准坐标系选择, 室内场景下固定相机点云)
   - [ ] 3D算法代码实现
   - [ ] 读3d论文
