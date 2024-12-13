@@ -23,3 +23,10 @@
 1. manyu 
 1. CPC Tencent Meeting https://meeting.tencent.com/dm/fpvM3sDK8XPh
 1. collect data 930
+
+730-830 run
+900-1030 test eef model
+1030-1130 read 3d diffusion paper
+1130-1230 lunch
+1330-1530 read 3d diffusion paper
+1530-1730 write a 3d zarr demo(cam extrinsic, intrinsic, depth, rgb)d
