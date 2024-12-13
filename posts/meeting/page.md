@@ -54,7 +54,21 @@ robot,物体 空间方位 <- 0 position
 
 
 
+## 2024-11-29, weekly meeting report
+### 上周工作计划
+  - [X] 部署KuavoToy模型：
+    joint:
+    eef:(明天弄)
+  
+  - [X] 3d转换点云
+  - [ ] 接入新的逆解算法
+  - [ ] 读论文
 
+
+### 下周计划:
+  - [ ] 采集3d数据
+  - [ ] 训练3d模型，修改2d模型测试
+  - [ ] 读论文
 
 ## 2024-11-29, weekly meeting report
 ### 上周工作计划
@@ -63,6 +77,9 @@ robot,物体 空间方位 <- 0 position
     ```Note: wrong cams order```
     ![alt text](image-5.png)
     ![alt text](image-6.png)
+    ```Note:two cams order```
+    
+
 ### 下周计划:
   - [ ] KuavoToy部署, 看下不同ckpt效果, 记录
   - [ ] 3D感知数据集(基准坐标系选择, 室内场景下固定相机点云)
