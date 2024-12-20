@@ -10,6 +10,17 @@ draft: True
 
 ---
 
+## 2024-12-20, weekly meeting report
+### 本周
+1. 数据格式转换
+![alt text](image-9.png)
+2. 论文调研
+3. 试了一下新出的仿真，确实很方便
+### 下周
+1. 数据训练测试
+2. 工具链论文
+
+
 ## 2024-12-13, weekly meeting report
 ### 本周
 1. 点云数据集
