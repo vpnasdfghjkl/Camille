@@ -10,6 +10,19 @@ draft: True
 
 ---
 
+## 2024-1-3, weekly meeting report
+### 本周
+1. 新模型训练和延迟测试，稳定了(分辨率)
+  <video controls src="KuavoToy_2024-12-31-21-18-57_speedx_latency0ms.mp4" title="Title"></video>
+2. lejuhub-lerobot
+  ![alt text](image-10.png)
+
+### 下周
+1. dp3数据采集
+
+
+
+
 ## 2024-12-20, weekly meeting report
 ### 本周
 1. 数据格式转换
@@ -57,13 +70,6 @@ draft: True
 - 背景，人干扰 - 测试
 - 局部特征(分割编码)
 
-推理速度
-物体， robot特征，
-
-robot,物体 空间方位 <- 0 position
-
-**采训部**
-
 
 
 
@@ -81,9 +87,6 @@ robot,物体 空间方位 <- 0 position
 ## 2024-11-29, weekly meeting report
 ### 上周工作计划
   - [X] 部署KuavoToy模型：
-    joint:
-    eef:(明天弄)
-  
   - [X] 3d转换点云
   - [ ] 接入新的逆解算法
   - [ ] 读论文

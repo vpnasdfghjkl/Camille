@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript AES Encryption</title>
+</head>
+<body>
+    <h1>AES 加密与解密</h1>
+    <textarea id="input" placeholder="请输入需要加密的内容" rows="4" cols="50"></textarea><br>
+    <input type="password" id="password" placeholder="请输入密码"><br>
+    <button onclick="encryptContent()">加密</button>
+    <button onclick="decryptContent()">解密</button><br>
+    <textarea id="output" placeholder="加密/解密的结果" rows="4" cols="50" readonly></textarea>
+
+    <script>
+    // AES 加密函数
+    async function encrypt(text, password) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+
+        // 补充或截断密码，确保其长度适配 AES-256（32 字节）
+        const key = password.padEnd(32, " ").slice(0, 32);
+        const cryptoKey = await crypto.subtle.importKey(
+            "raw",
+            encoder.encode(key),
+            { name: "AES-CBC" },
+            false,
+            ["encrypt"]
+        );
+
+        const iv = crypto.getRandomValues(new Uint8Array(16));
+        const encrypted = await crypto.subtle.encrypt(
+            { name: "AES-CBC", iv },
+            cryptoKey,
+            data
+        );
+
+        return {
+            cipherText: btoa(String.fromCharCode(...new Uint8Array(encrypted))),
+            iv: btoa(String.fromCharCode(...iv)),
+        };
+    }
+
+    // AES 解密函数
+    async function decrypt(cipherText, iv, password) {
+        const decoder = new TextDecoder();
+        const key = password.padEnd(32, " ").slice(0, 32);
+        const cryptoKey = await crypto.subtle.importKey(
+            "raw",
+            new TextEncoder().encode(key),
+            { name: "AES-CBC" },
+            false,
+            ["decrypt"]
+        );
+
+        const decrypted = await crypto.subtle.decrypt(
+            { name: "AES-CBC", iv: Uint8Array.from(atob(iv), c => c.charCodeAt(0)) },
+            cryptoKey,
+            Uint8Array.from(atob(cipherText), c => c.charCodeAt(0))
+        );
+
+        return decoder.decode(decrypted);
+    }
+
+    // 按钮点击：加密内容
+    async function encryptContent() {
+        const text = document.getElementById("input").value;
+        const password = document.getElementById("password").value;
+
+        if (!text || !password) {
+            alert("请输入需要加密的内容和密码！");
+            return;
+        }
+
+        const { cipherText, iv } = await encrypt(text, password);
+        document.getElementById("output").value = `加密内容：${cipherText}\nIV：${iv}`;
+    }
+
+    // 按钮点击：解密内容
+    async function decryptContent() {
+        const encryptedOutput = document.getElementById("output").value;
+        const password = document.getElementById("password").value;
+
+        if (!encryptedOutput || !password) {
+            alert("请输入加密结果和密码！");
+            return;
+        }
+
+        const lines = encryptedOutput.split("\n");
+        const cipherText = lines[0].replace("加密内容：", "").trim();
+        const iv = lines[1].replace("IV：", "").trim();
+
+        const decrypted = await decrypt(cipherText, iv, password);
+        document.getElementById("output").value = `解密结果：${decrypted}`;
+    }
+    </script>
+</body>
+</html>
