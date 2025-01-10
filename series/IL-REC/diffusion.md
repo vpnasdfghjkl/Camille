@@ -54,3 +54,13 @@ P(x_{t-1}|x_t) = ||\epsilon - f_{\theta}(x_t, t, \text{condition})||, \text{cond
 ```
 
 - VAE IL, DIFFUSION IL, BC_RNN IL , (octo IL)?
+
+## 关于部署端延迟以及模型预测时间的覆盖
+### 条件：
+1. 机器人数据的处理后频率为: 10Hz
+2. 模型预测时间约为: 0.13s
+
+### 设计
+1. 机器人轨迹设计为：1-100step, 时间为10s(10Hz)
+
+### 延迟模拟

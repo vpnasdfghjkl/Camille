@@ -10,6 +10,23 @@ draft: True
 
 ---
 
+## 2024-1-10, weekly meeting report
+### 本周
+1. lerobot training and deployment
+  由于一些参数，编码器输出维度不同，模型更小300M，泛化性更差(相对dp1.5G), 另外，少量的训练epoch，dp，lerobot都可以收敛。
+  只有全局信息，无关背景影响仍然有  
+  5000steps:
+  ![alt text](image-11.png)
+  90000steps:
+  ![alt text](image-12.png)
+2. 工具链论文
+
+
+### 下周
+1. 年终
+2. 点云
+3. diffsuion代码整合到lerobot
+
 ## 2024-1-3, weekly meeting report
 ### 本周
 1. 新模型训练和延迟测试，稳定了(分辨率)
