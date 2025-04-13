@@ -22,7 +22,7 @@
 </script>
 
 <script>
-	import ProfilePicture from '$lib/assets/profile_picture.jpg';
+	import ProfilePicture from '$lib/assets/SongJia.png';
 	import { Button } from '$lib/components/ui/button';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { getSocials } from '$lib/config';
@@ -36,8 +36,8 @@
 	</div>
 	<div class="items-start space-y-14 xl:grid xl:grid-cols-3 xl:gap-x-8 xl:space-y-0">
 		<div class="flex flex-col items-center space-x-2 xl:sticky xl:top-24">
-			<img src={ProfilePicture} alt="Prabhu Kiran Konda" class="w-56 h-56 rounded-full" />
-			<h3 class="pt-4 pb-2 text-2xl font-bold tracking-tight leading-8">Prabhu Kiran Konda</h3>
+			<img src={ProfilePicture} alt="Camille_HX" class="w-56 h-56 rounded-full" />
+			<h3 class="pt-4 pb-2 text-2xl font-bold tracking-tight leading-8">CAMILLE-X</h3>
 			<div class="flex space-x-3">
 				{#each getSocials({ exclude: 'Resume' }) as { icon, display, href }}
 					<Tooltip.Root openDelay={0}>

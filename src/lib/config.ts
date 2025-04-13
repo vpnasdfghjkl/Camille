@@ -58,7 +58,7 @@ export const socials: socialsType[] = [
 		class: 'h-4 w-4'
 	},
 	{
-		href: '/Prabhu Kiran Konda Resume.pdf',
+		href: '/HXdeResume.pdf',
 		icon: FileText,
 		display: 'Resume Example',
 	}
@@ -85,5 +85,5 @@ export const author = {
 };
 
 export const whatsNew: string = `
-Currently working on 100 Days of AI. A 100 day challenge to learn, teach and build AI
-@ <a href='https://neuralchemie.com' class="underline hover:underline-offset-4">Neuralchemie</a>`;
+I am currently interning at a humanoid robot company in Suzhou, mainly working on embodied AI-related tasks.<br>
+@ <a href='' class="underline hover:underline-offset-4">Intership Blog</a>`;

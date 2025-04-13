@@ -30,7 +30,12 @@ draft: True
 ## 2024-1-3, weekly meeting report
 ### 本周
 1. 新模型训练和延迟测试，稳定了(分辨率)
-  <video controls src="KuavoToy_2024-12-31-21-18-57_speedx_latency0ms.mp4" title="Title"></video>
+<!-- <video controls src="KuavoToy_2024-12-31-21-18-57_speedx_latency0ms.mp4" title="Title">
+  <track kind="captions" src="KuavoToy_2024-12-31-21-18-57_captions.vtt" srclang="en" label="English" default />
+</video> -->
+<video controls src="KuavoToy_2024-12-31-21-18-57_speedx_latency0ms.mp4">
+  <track kind="captions" src="" label="None" />
+</video>
 2. lejuhub-lerobot
   ![alt text](image-10.png)
 
@@ -68,7 +73,10 @@ draft: True
 ### 上周工作计划
   - [X] 部署KuavoToy模型,
     - 也会空抓，但是不会没有东西也去抓，局部特征不明显或者分辨率不够。(零点位置，轮数不够)
-    - <video controls src="KKKKuavo.mp4" title="Title"></video>
+    - <video controls src="KKKKuavo.mp4" title="Title">
+        <track kind="captions" src="" label="None" />
+      </video>
+
   - [X] 机器逆解更新
   - [X] 点云数据获取 
     - ![alt text](<2024-12-07 19-03-28 的屏幕截图.png>)

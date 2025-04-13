@@ -2,8 +2,7 @@
 title: "Transformer"
 description: Transformer from scratch.
 date: '2024-09-17'
-image: 
-    - /transformer-learning-from-scratch.png
+image: /transformer-learning-from-scratch.png
 tags: 
     - Machine Learning
     - Transformer
