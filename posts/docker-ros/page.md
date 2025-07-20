@@ -55,3 +55,10 @@ nvcc -V
 ## error experience
 1. docker使用宿主显示器
 xhost +local:docker
+
+
+## Dockerfile
+1. 使用宿主代理网络
+```sh
+docker build --network=host --build-arg http_proxy=http://127.0.0.1:7890 --build-arg https_proxy=http://127.0.0.1:7890 -t kuavo_il .
+```

@@ -12,25 +12,29 @@
 <div class="flex flex-col items-center justify-center space-y-4">
 	{#if meta.image}
 		{#if typeof meta.image === 'string'}
-			<img
-				src={meta.image}
-				alt={meta.title}
-				loading="lazy"
-				class="w-full md:w-[80%] h-auto md:rounded-lg max-h-[550px]"
-			/>
+			<div class="flex justify-center w-full md:w-[80%]">
+				<img
+					src={meta.image}
+					alt={meta.title}
+					loading="lazy"
+					class="max-h-[600px] max-w-full object-contain md:rounded-lg"
+				/>
+			</div>
 		{:else if Array.isArray(meta.image)}
-			<img
-				src={meta.image[0]}
-				alt={meta.title}
-				loading="lazy"
-				class="w-full md:w-[80%] h-auto md:rounded-lg max-h-[550px] dark:hidden"
-			/>
-			<img
-				src={meta.image[1]}
-				alt={meta.title}
-				loading="lazy"
-				class="w-full md:w-[80%] h-auto md:rounded-lg max-h-[550px] hidden dark:block"
-			/>
+			<div class="flex justify-center w-full md:w-[80%]">
+				<img
+					src={meta.image[0]}
+					alt={meta.title}
+					loading="lazy"
+					class="max-h-[600px] max-w-full object-contain md:rounded-lg dark:hidden"
+				/>
+				<img
+					src={meta.image[1]}
+					alt={meta.title}
+					loading="lazy"
+					class="max-h-[600px] max-w-full object-contain md:rounded-lg hidden dark:block"
+				/>
+			</div>
 		{/if}
 	{/if}
 
