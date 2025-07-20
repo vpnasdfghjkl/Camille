@@ -2,7 +2,7 @@
 title: "MyServer"
 description: remote access tricks(ssh, port transfer)
 date: '2025-04-16'
-image: '/series/mystyle/blog_to_server.png'
+image: /series/mystyle/blog_to_server.png
 order: 2
 tags: 
     - RemoteSSh
