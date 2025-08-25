@@ -5,6 +5,6 @@ date: '2023-12-16'
 tags:
   - SvelteKit
   - MDsveX
-image: /series-imitation.png
+image: /imitation.png
 draft: false
 ---
