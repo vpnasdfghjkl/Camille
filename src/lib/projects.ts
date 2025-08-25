@@ -21,17 +21,16 @@ export const projects: ProjectType[] = [
 		techstack: ['SvelteKit', 'Tailwind', 'TypeScript'],
 		featured: true
 	},
-
-	// {
-	// 	title: 'Corgi-AI: Create anything with AI',
-	// 	description:
-	// 		'Corgi AI is a collection of AI tools for different usecases. It includes a chatGPT clone with streaming responses, Image Generation, Audio Generation, Image Restoration and PDF Chat(beta). It is a full fledged SaaS application with stripe payments. It is Deployed using Docker with a VPS hosting on fly.io',
-	// 	href: 'https://corgi-ai.fly.dev',
-	// 	source: 'https://github.com/PrabhuKiran8790/corgi-docker',
-	// 	image: '/corgi-ai-dashboard.png',
-	// 	techstack: ['SvelteKit', 'TypeScript', 'PostgreSQL', 'Docker', 'Drizzle'],
-	// 	featured: true
-	// },
+	{
+		title: 'Robotics: embodied AI for robotic manipulation - kuavo-il-opensource',
+		description:
+			'kuavo-il-opensource is an open-source project aimed at advancing embodied AI for robotic manipulation tasks. It provides a comprehensive framework for training and deploying AI models in robotic systems.',
+		href: 'https://gitee.com/leju-robot/kuavo-il-opensource',
+		source: 'https://gitee.com/leju-robot/kuavo-il-opensource',
+		image: '/waic4.jpg',
+		techstack: ['ROS', 'Docker', 'Python', "PyTorch",],
+		featured: true
+	},
 	// {
 	// 	title: 'Dall-E Clone: AI Image Generation',
 	// 	description:

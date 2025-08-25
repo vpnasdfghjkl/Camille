@@ -19,10 +19,10 @@
 	</div>
 </div>
 
-<!-- <div class="max-w-7xl md:mx-auto gap-x-[5px]">
+<div class="max-w-7xl md:mx-auto gap-x-[5px]">
 	<Masonry items={featured} reset gridGap={'0.9rem'}>
 		{#each featured as project}
 			<ProjectCard {project} />
 		{/each}
 	</Masonry>
-</div> -->
+</div>

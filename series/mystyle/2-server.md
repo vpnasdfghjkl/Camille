@@ -271,3 +271,15 @@ deb http://ports.ubuntu.com/ubuntu-ports/ focal-security main restricted univers
 # # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-proposed main restricted universe multiverse
 EOF
 ```
+
+## uv
+```sh
+# 安装 uv (一次性)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 新建环境 (指定 Python 版本)
+uv venv --python 3.11 ~/.virtualenvs/pylab
+
+# 激活
+source ~/.virtualenvs/pylab/bin/activate
+```

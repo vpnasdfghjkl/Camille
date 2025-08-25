@@ -6,7 +6,7 @@ image:
     - ""
 tags: 
     - Meeting
-draft: True
+draft: true
 
 ---
 
@@ -456,13 +456,6 @@ draft: True
   - 预处理图片使用语义condition的背景去噪
 
 
-
-
-
-
-
-
-
 ```markdown
 1. 周例会内容要点格式(文档形式)
 - 上周工作计划
@@ -528,5 +521,3 @@ draft: True
 
 - meeting rec
   - 对标什么改进
-
-

@@ -58,7 +58,7 @@ export const socials: socialsType[] = [
 		class: 'h-4 w-4'
 	},
 	{
-		href: '/HXdeResume.pdf',
+		href: '/hanxiao_resume_v1_6.pdf',
 		icon: FileText,
 		display: 'Resume Example',
 	}

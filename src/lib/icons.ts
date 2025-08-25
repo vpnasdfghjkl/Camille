@@ -17,10 +17,10 @@ export const techStackArray = tuple(
 	'Linux',
 	'Jetson',
 	'Imitation Learning',
-	// 'TypeScript',
+	'TypeScript',
 	// 'JavaScript',
 	// 'Java',
-	// 'React',
+	'React',
 	'NextJS',
 	'SvelteKit',
 	// 'TensorFlow',
@@ -32,7 +32,7 @@ export const techStackArray = tuple(
 	'FastAPI',
 	// 'Drizzle',
 	'Tailwind',
-	// 'Robotics',
+	'Robotics',
 );
 
 export type TechStack = (typeof techStackArray)[number];
