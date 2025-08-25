@@ -6,7 +6,7 @@ tags:
   - SvelteKit
   - MDsveX
 order: 1
-image: /series/mystyle/colored.png
+image: /series_mystyle__colored.png
 draft: false
 ---
 

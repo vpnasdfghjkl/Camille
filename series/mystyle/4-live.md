@@ -2,7 +2,7 @@
 title: "Dissection"
 description: A journey through my personal and professional experiences
 date: '2025-07-06'
-image: /series/mystyle/nj_xwh.jpg
+image: /series_mystyle__nj_xwh.jpg
 order: 2
 tags: 
     - Recognition

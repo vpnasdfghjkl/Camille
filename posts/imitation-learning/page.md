@@ -7,7 +7,7 @@ tags:
   - octo
   - JAX
 image: '/posts/imitation-learning/octo.png'
-draft: false
+draft: true
 ---
 ## data
 1. eef: 人类看eef图可以知道机器人末端的轨迹，看joint不行

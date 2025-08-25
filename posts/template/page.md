@@ -2,7 +2,7 @@
 title: 'How many VRAM should you need of your Neural Network ?'
 description: estimate the graphic memory needed for your neural network according to the model parameters, the middle variables and the batch size.
 date: '2024-10-30'
-image: '/posts/template/vgg16_total_mem.png'
+image: '/template__vgg16_total_mem.png'
 tags: 
     - Deep Learning
     - Graphical Memory

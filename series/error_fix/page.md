@@ -6,6 +6,6 @@ tags:
   - zlib
   - macos
   - pyenv
-image: '/series/error_fix/link_zlib_in_macos_path.png'
+image: '/series_error_fix__link_zlib_in_macos_path.png'
 draft: false
 ---
