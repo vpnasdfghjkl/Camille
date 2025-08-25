@@ -6,6 +6,6 @@ tags:
   - zlib
   - macos
   - pyenv
-image: /image.png
+image: /errorfix.png
 draft: false
 ---
