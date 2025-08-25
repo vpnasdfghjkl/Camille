@@ -2,7 +2,7 @@
 title: "Jetson AGX Orin for DL"
 description: Jetson AGX Orin for DL Inference
 date: '2025-04-11'
-image: /posts_jetsonagx__image.png
+image: /postsJetsonagxImage.png
 tags: 
     - Robot
     - Imitation Learning
