@@ -4,7 +4,7 @@ description: docker use
 date: '2024-8-16'
 tags:
   - Docker
-image: '/posts_docker__image.png'
+image: /posts_docker__image.png
 draft: false
 ---
 docker pull ros:noetic
