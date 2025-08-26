@@ -6,7 +6,7 @@ tags:
   - lib
   - error_fix
 order: 1
-image: '/series/error_fix/link_zlib_in_macos_path.png'
+image: '/series/error-fix/errorfix.png'
 draft: false
 ---
 

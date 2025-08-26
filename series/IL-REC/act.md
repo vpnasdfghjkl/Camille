@@ -1,6 +1,6 @@
 ---
-title: 
-description: 
+title: Act
+description: Action Chunking with Transformer
 date: '2025-8-25'
 order: 5
 tags:
