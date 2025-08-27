@@ -6,7 +6,7 @@ tags:
   - lib
   - error_fix
 order: 1
-image: '/series/error-fix/errorfix.png'
+image: '/errorfix.png'
 draft: false
 ---
 
