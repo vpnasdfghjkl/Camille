@@ -28,7 +28,7 @@
 	}
 </script>
 
-<ModeWatcher />
+<ModeWatcher defaultMode="light" />
 <MetaTags />
 <Toaster />
 <Navbar />

@@ -11,3 +11,6 @@ draft: true
 
 ### Algorithm 1: ACT Training
 
+### 最小二乘
+
+### Adam

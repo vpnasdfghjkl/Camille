@@ -23,3 +23,7 @@ draft: false
 
 
 ## Conflicts
+
+## 贯彻
+1. 不能只在赢的时候自信，不能只在输的时候努力。
+2. 搏击俱乐部：If you are not on your way to becoming a veterinarian in 6 weeks, you will be dead. Tomorrow will be the most beautiful day of Raymond K. Hessel's life. His breakfast will taste better than any meal you and I have ever tasted. No fear，no distractinos
