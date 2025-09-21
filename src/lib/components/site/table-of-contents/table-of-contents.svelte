@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Tree, type TableOfContents, type TableOfContentsItem } from '.';
+	import Tree from './tree.svelte';
+	import type { TableOfContents, TableOfContentsItem } from './index';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { BookOpen } from 'lucide-svelte';
 	import { currentHeadingId } from '$lib/stores';

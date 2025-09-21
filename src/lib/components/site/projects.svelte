@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { projects } from '$lib/projects';
-	import { Masonry, ProjectCard } from '.';
+	import Masonry from './masonry.svelte';
+	import ProjectCard from './project-card.svelte';
 
 	const n = projects.length;
 </script>

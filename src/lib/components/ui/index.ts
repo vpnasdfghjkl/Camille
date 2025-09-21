@@ -4,6 +4,7 @@ import FullPageNavigator from './FullPageNavigator.svelte';
 import SectionDivider from './SectionDivider.svelte';
 import SectionDividerVariant from './SectionDividerVariant.svelte';
 import GeometricBackground from './GeometricBackground.svelte';
+import VideoPlayer from './VideoPlayer.svelte';
 
 export { 
 	TypewriterText,
@@ -11,5 +12,6 @@ export {
 	FullPageNavigator,
 	SectionDivider,
 	SectionDividerVariant,
-	GeometricBackground
+	GeometricBackground,
+	VideoPlayer
 };

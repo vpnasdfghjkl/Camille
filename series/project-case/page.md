@@ -7,5 +7,5 @@ tags:
   - robotics
   - Deep Learning
 image: /dify.png
-draft: true
+draft: false
 ---

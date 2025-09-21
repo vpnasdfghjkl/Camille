@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TechStackIcon } from '.';
+	import TechStackIcon from './techstack-icon.svelte';
 	import { techStackArray } from '$lib/icons';
 </script>
 

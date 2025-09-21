@@ -2,7 +2,9 @@
 	import { formatDate } from '$lib/utils';
 	import { Calendar, Tag as TagIcon } from 'lucide-svelte';
 	import type { PageData } from '../../../routes/blog/[slug]/$types';
-	import { SeriesBlogAccordian, Tag, Author } from '.';
+	import SeriesBlogAccordian from './series-blog-accordian.svelte';
+	import Tag from './tag.svelte';
+	import Author from './author.svelte';
 	import { tagToSlug } from '$lib/posts';
 
 	export let data: PageData;

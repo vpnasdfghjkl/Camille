@@ -1,6 +1,6 @@
 <script>
 	import * as Sheet from '$lib/components/ui/sheet';
-	import { MobileMenu } from '.';
+	import MobileMenu from './mobile-menu.svelte';
 	import { openMobileMenu } from '$lib/stores';
 	import { Minus } from 'lucide-svelte';
 	import { routes } from '$lib/config';

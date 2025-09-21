@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { cn } from '$lib/utils';
 	import { CornerDownRight } from 'lucide-svelte';
-	import type { TableOfContents } from '.';
+	import type { TableOfContents } from './index';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { currentHeadingId } from '$lib/stores';
 

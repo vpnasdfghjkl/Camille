@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { cn } from '$lib/utils';
-	import { ThemeToggle } from '.';
+	import ThemeToggle from './theme-toggle.svelte';
 	import { navigating, page } from '$app/stores';
 	import { Menu, X } from 'lucide-svelte';
 	import { routes } from '$lib/config';

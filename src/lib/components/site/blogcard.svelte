@@ -3,7 +3,7 @@
 	import type { Post, Series } from '$lib/types';
 	import { cn, formatDate } from '$lib/utils';
 	import { Calendar } from 'lucide-svelte';
-	import { Tag } from '.';
+	import Tag from './tag.svelte';
 
 	export let post: Post | Series;
 	let className: string = 'md:max-w-md';

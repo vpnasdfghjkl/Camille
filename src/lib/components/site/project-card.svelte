@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import type { ProjectType } from '$lib/projects';
-	import { ArrowRight, Github } from 'lucide-svelte';
-	import { TechStackIcon } from '.';
+	import { ArrowRight, Github, Play } from 'lucide-svelte';
+	import { formatDate } from '$lib/utils';
+	import type { Post } from '$lib/types';
+	import { ExternalLink } from 'lucide-svelte';
+	import TechStackIcon from './techstack-icon.svelte';
 	import { cn } from '$lib/utils';
 
 	export let project: ProjectType;
@@ -37,12 +40,22 @@
 		</div>
 
 		<div>
-			<div class="flex items-center justify-between">
-				<div>
+			<div class="flex items-center justify-between gap-2">
+				<div class="flex items-center gap-2">
 					<Button variant="ghost" size="sm" class="px-3 py-0" href={project.href} target="_blank"
 						>Visit
 						<ArrowRight class={`h-4 w-4 ml-2`} /></Button
 					>
+					{#if project.videoLink}
+						<Button
+							variant="ghost"
+							size="sm"
+							class="px-3 py-0"
+							href={project.videoLink}
+							>video
+							<Play class={`h-4 w-4 ml-2`} /></Button
+						>
+					{/if}
 				</div>
 				{#if project.source}
 					<div>

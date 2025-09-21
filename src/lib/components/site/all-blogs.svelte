@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Post } from '$lib/types';
-	import { Masonry } from '.';
+	import Masonry from './masonry.svelte';
 	import Blogcard from './blogcard.svelte';
 
 	export let posts: Post[];

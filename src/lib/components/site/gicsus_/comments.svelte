@@ -9,7 +9,7 @@
 
 	import { theme } from '$lib/stores';
 
-	import { Giscus } from '.';
+	import Giscus from './giscus.svelte';
 
 	export let theme_: string | undefined;
 </script>

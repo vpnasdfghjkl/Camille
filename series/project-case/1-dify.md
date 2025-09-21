@@ -1,12 +1,12 @@
 ---
-title: Adam
-description: A guide to the Adam optimization algorithm.
+title: Dify
+description: A guide to the Dify platform.
 date: '2025-8-26'
 tags:
-  - Optimization
-  - Deep Learning
+  - RAG
+
 order: 1
-image: /adam.png
+image: /dify.png
 draft: false
 ---
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Menu, Search, X } from 'lucide-svelte';
-	import { ThemeToggle } from '.';
+	import ThemeToggle from './theme-toggle.svelte';
 	import { Button } from '../ui/button';
 	import { openMobileMenu, searchOpen } from '$lib/stores';
 	import { Toc } from './table-of-contents';

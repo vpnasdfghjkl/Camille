@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { AvailableLanguage, BooleanString, InputPosition, Loading, Mapping, Theme } from '.';
+	import type { AvailableLanguage, BooleanString, InputPosition, Loading, Mapping, Theme } from './index';
 
 	export let id: string = undefined;
 	export let host = 'https://giscus.app';

@@ -20,7 +20,10 @@ draft: true
 ## 2025-6-13, weekly meeting report
 ### 本周工作内容
 1. 解决回退和chunk脱节的问题
-<video controls src="smooth.mp4" title="Title"></video>
+<video controls src="smooth.mp4" title="Title">
+  <track kind="captions" src="" label="无字幕" default />
+  您的浏览器不支持视频播放。
+</video>
 2. 大论文提纲基本定下来了
 3. 工业场景的抓取视频
 
@@ -187,7 +190,8 @@ draft: true
   <track kind="captions" src="KuavoToy_2024-12-31-21-18-57_captions.vtt" srclang="en" label="English" default />
 </video> -->
 <video controls src="KuavoToy_2024-12-31-21-18-57_speedx_latency0ms.mp4">
-  <track kind="captions" src="" label="None" />
+  <track kind="captions" src="" label="无字幕" default />
+  您的浏览器不支持视频播放。
 </video>
 2. lejuhub-lerobot
   ![alt text](image-10.png)
@@ -227,7 +231,8 @@ draft: true
   - [X] 部署KuavoToy模型,
     - 也会空抓，但是不会没有东西也去抓，局部特征不明显或者分辨率不够。(零点位置，轮数不够)
     - <video controls src="KKKKuavo.mp4" title="Title">
-        <track kind="captions" src="" label="None" />
+        <track kind="captions" src="" label="无字幕" default />
+        您的浏览器不支持视频播放。
       </video>
 
   - [X] 机器逆解更新

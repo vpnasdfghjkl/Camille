@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { projects } from '$lib/projects';
-	import { Masonry, ProjectCard } from '.';
+	import Masonry from './masonry.svelte';
+	import ProjectCard from './project-card.svelte';
 	import { Button } from '$lib/components/ui/button';
 	const featured = projects.filter((project) => {
 		return project.featured;

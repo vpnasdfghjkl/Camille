@@ -5,6 +5,7 @@ export type ProjectType = {
 	featured?: boolean;
 	href: string;
 	source?: string;
+	videoLink?: string; // 添加视频链接字段
 	image: string;
 	description: string;
 	techstack: TechStack[];
@@ -27,6 +28,7 @@ export const projects: ProjectType[] = [
 			'kuavo-il-opensource is an open-source project aimed at advancing embodied AI for robotic manipulation tasks. It provides a comprehensive framework for training and deploying AI models in robotic systems.',
 		href: 'https://gitee.com/leju-robot/kuavo-il-opensource',
 		source: 'https://gitee.com/leju-robot/kuavo-il-opensource',
+		videoLink: '/blog/project-case-spn2-2-kuavo-il-opensource',
 		image: '/waic4.jpg',
 		techstack: ['ROS', 'Docker', 'Python', "PyTorch",],
 		featured: true
