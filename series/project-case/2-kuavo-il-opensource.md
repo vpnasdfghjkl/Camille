@@ -13,7 +13,6 @@ draft: false
   import { VideoPlayer } from '$lib/components/ui';
 </script>
 
-## 项目演示
 
 <VideoPlayer 
   src="/waic3.mov"
