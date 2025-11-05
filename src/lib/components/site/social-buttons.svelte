@@ -4,15 +4,15 @@
 	import { cn } from '$lib/utils';
 </script>
 
-<div class="max-w-2xl py-4 mx-auto grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-4">
+<div class="flex flex-wrap gap-2 mt-4">
 	{#each getSocials({ exclude: 'Mail' }) as { display, href, icon }}
 		<a
 			{href}
 			target="_blank"
-			class={cn('justify-between gap-3', buttonVariants({ variant: 'outline' }))}
+			class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
 		>
-			<svelte:component this={icon} />
-			<p>{display}</p>
+			<svelte:component this={icon} class="h-3.5 w-3.5" />
+			<span>{display}</span>
 		</a>
 	{/each}
 </div>

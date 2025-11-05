@@ -84,6 +84,11 @@ export const author = {
 	twt: 'prabhukirantwt'
 };
 
-export const whatsNew: string = `
-I am currently interning at a humanoid robot company in Suzhou, mainly working on embodied AI-related tasks.<br>
-@ <a href='' class="underline hover:underline-offset-4">Intership Blog</a>`;
+export const whatsNew: string = 
+`I am currently studying Arduino, gradually understanding how code is implemented on hardware. This is an excellent way to exercise logical thinking skills.<br>
+@ <a href='/blog/mystyle-spn5-5-arduino' class="underline hover:underline-offset-4">Arduino Learning Blog</a>;
+`
+
+// I am currently interning at a humanoid robot company in Suzhou, mainly working on embodied AI-related tasks.<br>
+// @ <a href='' class="underline hover:underline-offset-4">Intership Blog</a>
+

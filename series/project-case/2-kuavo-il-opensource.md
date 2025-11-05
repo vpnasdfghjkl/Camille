@@ -4,6 +4,7 @@ description: A guide to the kuavo-il-opensource platform.
 date: '2025-8-26'
 tags:
   - Imitation Learning
+  - Graduation Project 
 order: 2
 image: /waic_dex_pre0.png
 draft: false

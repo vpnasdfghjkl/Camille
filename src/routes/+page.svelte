@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { Hero, LatestPost, FeaturedProjects } from '$lib/components/site';
+	import { SocialButtons } from '$lib/components/site';
+
 	import { 
 		FullPageScrollController, 
 		FullPageNavigator, 
