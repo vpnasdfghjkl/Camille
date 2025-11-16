@@ -3,7 +3,8 @@
 	import type { ContributionDay, MonthLabel, FocusArea } from '$lib/types/contribution';
 	import type { CalendarState, DailyCheckin } from '$lib/types/checkin';
 	import CheckinModal from './checkin-modal.svelte';
-	import { getFocusTasksConfigAsync, convertToFocusAreas, type FocusTaskConfig } from '$lib/config/focus-tasks';
+	import { loadFocusTasksConfig } from '$lib/config/focus-tasks-universal';
+	import type { FocusTaskConfig } from '$lib/config/focus-tasks';
 
 	// Props
 	export let title = '年度工作打卡图';
@@ -34,8 +35,8 @@
 
 	onMount(async () => {
 		// 首先加载焦点任务配置
-		focusTasksConfig = await getFocusTasksConfigAsync();
-		console.log('Loaded focus tasks config:', focusTasksConfig);
+		focusTasksConfig = await loadFocusTasksConfig();
+		console.log('✅ 加载焦点任务配置:', focusTasksConfig);
 		
 		if (useRealData) {
 			await loadRealData();
@@ -86,8 +87,9 @@
 				longestStreak: 23,
 				completionRate: 49
 			},
-			focusAreas: convertToFocusAreas(focusTasksConfig).map((area, index) => ({
-				...area,
+			focusAreas: focusTasksConfig.map((task, index) => ({
+				name: task.name,
+				icon: task.icon,
 				count: [120, 90, 60, 30, 20, 10][index] || 10, // 模拟数据
 				percentage: [40, 30, 20, 10, 5, 5][index] || 5
 			})),

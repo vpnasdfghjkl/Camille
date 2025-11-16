@@ -2,8 +2,8 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { CalendarState, CheckinStats, ApiResponse, DailyCheckin } from '$lib/types/checkin';
 import type { ContributionDay, FocusArea } from '$lib/types/contribution';
-import { getCheckinsInRange } from '$lib/server/checkin-storage';
-import { getFocusTasksConfig, convertToFocusAreas } from '$lib/config/focus-tasks';
+import { getCheckinsInRange } from '$lib/server/checkin-storage-universal';
+import { loadFocusTasksConfig } from '$lib/config/focus-tasks-universal';
 
 // 从存储服务获取数据
 async function fetchCheckinData(startDate: string, endDate: string): Promise<DailyCheckin[]> {
@@ -21,9 +21,13 @@ function calculateFocusLevel(focusTasksCompleted: number): number {
 }
 
 // 生成贡献图数据
-function generateContributionData(checkins: DailyCheckin[], startDate: Date, endDate: Date): ContributionDay[] {
+async function generateContributionData(checkins: DailyCheckin[], startDate: Date, endDate: Date): Promise<ContributionDay[]> {
 	const contributions: ContributionDay[] = [];
 	const checkinMap = new Map(checkins.map(c => [c.date, c]));
+	
+	// 获取最新的任务配置
+	const focusTasksConfig = await loadFocusTasksConfig();
+	const totalFocusTasks = focusTasksConfig.length;
 	
 	const currentDate = new Date(startDate);
 	while (currentDate <= endDate) {
@@ -31,9 +35,6 @@ function generateContributionData(checkins: DailyCheckin[], startDate: Date, end
 		const checkin = checkinMap.get(dateStr);
 		
 		const level = checkin ? calculateFocusLevel(checkin.focusTasksCompleted || 0) : 0;
-		// 动态获取任务总数 - 优先使用实际配置，其次使用记录中的数组长度
-		const focusTasksConfig = getFocusTasksConfig();
-		const totalFocusTasks = focusTasksConfig.length || checkin?.focusTasks?.length || 6;
 		
 		const contribution: ContributionDay = {
 			date: dateStr,
@@ -95,38 +96,33 @@ function calculateStats(checkins: DailyCheckin[]): CheckinStats {
 	};
 }
 
-// 分析专注领域
-function analyzeFocusAreas(checkins: DailyCheckin[]): FocusArea[] {
-	// 这里可以根据工作计划内容分析关键词
-	// 简化版本，返回一些示例数据
-	const areas: FocusArea[] = [
-		{ name: '编程开发', count: 0, percentage: 0 },
-		{ name: '学习研究', count: 0, percentage: 0 },
-		{ name: '项目管理', count: 0, percentage: 0 },
-		{ name: '文档写作', count: 0, percentage: 0 }
-	];
+// 分析专注领域 - 基于实际的 focus tasks 配置
+async function analyzeFocusAreas(checkins: DailyCheckin[]): Promise<FocusArea[]> {
+	const focusTasksConfig = await loadFocusTasksConfig();
 	
-	const keywords = {
-		'编程开发': ['代码', '编程', '开发', '前端', '后端', 'bug', '功能'],
-		'学习研究': ['学习', '研究', '教程', '文档', '笔记', '总结'],
-		'项目管理': ['项目', '计划', '会议', '讨论', '评审', '管理'],
-		'文档写作': ['文档', '写作', '博客', '记录', '整理', '总结']
-	};
+	// 基于实际配置创建统计数据
+	const areas: FocusArea[] = focusTasksConfig.map(task => ({
+		name: task.name,
+		icon: task.icon,
+		count: 0,
+		percentage: 0
+	}));
 	
+	// 统计每个任务在打卡记录中被完成的次数
 	checkins.forEach(checkin => {
-		if (checkin.workPlan) {
-			const plan = checkin.workPlan.toLowerCase();
-			Object.entries(keywords).forEach(([area, words]) => {
-				if (words.some(word => plan.includes(word))) {
-					const areaObj = areas.find(a => a.name === area);
-					if (areaObj && areaObj.count !== undefined) {
-						areaObj.count++;
+		if (checkin.focusTasks && Array.isArray(checkin.focusTasks)) {
+			checkin.focusTasks.forEach(task => {
+				if (task.isCompleted) {
+					const areaObj = areas.find(a => a.name === task.name);
+					if (areaObj) {
+						areaObj.count = (areaObj.count || 0) + 1;
 					}
 				}
 			});
 		}
 	});
 	
+	// 计算百分比
 	const total = areas.reduce((sum, area) => sum + (area.count || 0), 0);
 	areas.forEach(area => {
 		area.percentage = total > 0 ? Math.round(((area.count || 0) / total) * 100) : 0;
@@ -152,13 +148,13 @@ export const GET: RequestHandler = async ({ url }) => {
 		const checkins = await fetchCheckinData(startDateStr, endDateStr);
 		
 		// 生成贡献图数据
-		const contributions = generateContributionData(checkins, start, end);
+		const contributions = await generateContributionData(checkins, start, end);
 		
 		// 计算统计信息
 		const stats = calculateStats(checkins);
 		
 		// 分析专注领域
-		const focusAreas = analyzeFocusAreas(checkins);
+		const focusAreas = await analyzeFocusAreas(checkins);
 		
 		const calendarState: CalendarState = {
 			contributions,
@@ -178,6 +174,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		return json(response);
 
 	} catch (error) {
+		console.error('❌ 获取统计数据失败:', error);
 		const errorResponse: ApiResponse = {
 			success: false,
 			error: error instanceof Error ? error.message : '获取统计数据失败'

@@ -3,7 +3,6 @@
 	import { browser } from '$app/environment';
 	import type { DailyCheckin } from '$lib/types/checkin';
 	import type { FocusTaskConfig } from '$lib/config/focus-tasks';
-	import { convertToFocusTasks } from '$lib/config/focus-tasks';
 	import { enableModalScrolling, disableModalScrolling } from '$lib/stores/scroll';
 	
 	// Props
@@ -38,6 +37,23 @@
 		description: string;
 		isCompleted: boolean;
 	}> = [];
+
+	// 将焦点任务配置转换为打卡模态框格式
+	function convertToFocusTasks(tasks: FocusTaskConfig[]): Array<{
+		id: string;
+		name: string;
+		icon: string;
+		description: string;
+		isCompleted: boolean;
+	}> {
+		return tasks.map(task => ({
+			id: task.id,
+			name: task.name,
+			icon: task.icon,
+			description: task.description,
+			isCompleted: false
+		}));
+	}
 
 	// 监听配置变化，智能更新任务列表
 	$: if (focusTasksConfig.length > 0) {

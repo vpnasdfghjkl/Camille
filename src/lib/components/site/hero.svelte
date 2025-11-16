@@ -83,7 +83,7 @@
 		<InteractiveContributionGraph 
 			title="🎯 Daily Focus Tracker"
 			showFocusAreas={true}
-			useRealData={false}
+			useRealData={true}
 			on:dayClick={handleDayClick}
 			on:dataUpdate={handleDataUpdate}
 		/>
