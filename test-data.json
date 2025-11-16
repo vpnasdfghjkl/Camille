@@ -1,0 +1,112 @@
+[
+  {
+    "id": "test_perfect_day",
+    "date": "2025-11-18",
+    "wakeUpTime": "07:00",
+    "workStartTime": "09:00", 
+    "workPlan": "测试完美日 - 所有任务完成",
+    "focusTasks": [
+      {
+        "id": "deep-work",
+        "name": "深度工作",
+        "icon": "🎯",
+        "description": "需要专注的核心任务",
+        "isCompleted": true
+      },
+      {
+        "id": "learning", 
+        "name": "学习充电",
+        "icon": "📚",
+        "description": "学习新知识或技能",
+        "isCompleted": true
+      },
+      {
+        "id": "planning",
+        "name": "计划整理", 
+        "icon": "📋",
+        "description": "制定计划或整理思路",
+        "isCompleted": true
+      },
+      {
+        "id": "communication",
+        "name": "沟通协作",
+        "icon": "💬", 
+        "description": "团队沟通或项目协作",
+        "isCompleted": true
+      },
+      {
+        "id": "health",
+        "name": "运动健康",
+        "icon": "💪",
+        "description": "运动锻炼或健康管理", 
+        "isCompleted": true
+      },
+      {
+        "id": "side-project",
+        "name": "副业项目",
+        "icon": "🚀",
+        "description": "个人项目或副业发展",
+        "isCompleted": true
+      }
+    ],
+    "focusTasksCompleted": 6,
+    "notes": "完美的一天！所有任务都完成了！",
+    "createdAt": "2025-11-16T04:50:00.000Z",
+    "updatedAt": "2025-11-16T04:50:00.000Z"
+  },
+  {
+    "id": "test_partial_day", 
+    "date": "2025-11-19",
+    "wakeUpTime": "07:30",
+    "workStartTime": "09:00",
+    "workPlan": "测试部分完成日",
+    "focusTasks": [
+      {
+        "id": "deep-work",
+        "name": "深度工作", 
+        "icon": "🎯",
+        "description": "需要专注的核心任务",
+        "isCompleted": true
+      },
+      {
+        "id": "learning",
+        "name": "学习充电",
+        "icon": "📚", 
+        "description": "学习新知识或技能",
+        "isCompleted": false
+      },
+      {
+        "id": "planning",
+        "name": "计划整理",
+        "icon": "📋",
+        "description": "制定计划或整理思路", 
+        "isCompleted": true
+      },
+      {
+        "id": "communication",
+        "name": "沟通协作",
+        "icon": "💬",
+        "description": "团队沟通或项目协作",
+        "isCompleted": false
+      },
+      {
+        "id": "health", 
+        "name": "运动健康",
+        "icon": "💪",
+        "description": "运动锻炼或健康管理",
+        "isCompleted": false
+      },
+      {
+        "id": "side-project",
+        "name": "副业项目",
+        "icon": "🚀",
+        "description": "个人项目或副业发展",
+        "isCompleted": true
+      }
+    ],
+    "focusTasksCompleted": 3,
+    "notes": "还有进步空间",
+    "createdAt": "2025-11-16T04:50:00.000Z", 
+    "updatedAt": "2025-11-16T04:50:00.000Z"
+  }
+]

@@ -73,7 +73,7 @@
 	/>
 	
 	<!-- 内容区域 -->
-	<div class="relative z-10 max-w-7xl mx-auto">
+	<div class="relative z-10 max-w-7xl mx-auto pt-0">
 		<!-- Hero 部分 -->
 		<section bind:this={heroSection} class="px-6 py-16 md:py-24 min-h-screen flex items-center">
 			<div class="w-full">

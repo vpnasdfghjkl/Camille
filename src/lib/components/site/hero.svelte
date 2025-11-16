@@ -1,12 +1,12 @@
 <script lang="ts">
 	import ProfilePicture from '$lib/assets/camille4.png';
 	import { SocialButtons } from '$lib/components/site';
-	import ContributionGraph from '$lib/components/site/contribution-graph.svelte';
+	import InteractiveContributionGraph from '$lib/components/site/interactive-contribution-graph.svelte';
 	import Avatar from '$lib/components/site/avatar.svelte';
 	import { whatsNew } from '$lib/config';
 	import { Mailbox } from 'lucide-svelte';
 	import { TypewriterText } from '$lib/components/ui';
-	import type { FocusArea } from '$lib/types/contribution';
+	import type { CalendarState, DailyCheckin } from '$lib/types/checkin';
 
 	// 头像配置
 	const hoverImage = '/SongJia.png';
@@ -14,17 +14,20 @@
 	// 打字机文本配置
 	const heroTexts: string[] = [
 		'PROGRAM CAMILLE',
-		'ROBOTICS LEARNING',
+		'ROBOTICS LEARNING', 
 		'TECHNICAL BLOGGER'
 	];
 
-	// 关注领域数据
-	const focusAreas: FocusArea[] = [
-		{ name: 'Graduation Project', icon: '📚' },
-		{ name: 'Artificial Intelligence', icon: '🤖' },
-		{ name: 'Programming for Logics', icon: '💻' },
-		{ name: 'Running', icon: '🏃‍♂️' }
-	];
+	// 处理贡献图交互
+	function handleDayClick(event: CustomEvent<{ date: string; checkin?: DailyCheckin }>) {
+		const { date, checkin } = event.detail;
+		console.log('点击了日期:', date, '已有记录:', checkin ? '是' : '否');
+	}
+
+	function handleDataUpdate(event: CustomEvent<CalendarState>) {
+		const calendarState = event.detail;
+		console.log('贡献图数据更新:', calendarState.stats);
+	}
 </script>
 
 <div class="md:container">
@@ -75,9 +78,15 @@
 		</div>
 	</div>
 	
-	<!-- Recent Focus 贡献图 -->
+	<!-- 交互式 Recent Focus 贡献图 -->
 	<div class="mt-8">
-		<ContributionGraph {focusAreas} />
+		<InteractiveContributionGraph 
+			title="🎯 Daily Focus Tracker"
+			showFocusAreas={true}
+			useRealData={false}
+			on:dayClick={handleDayClick}
+			on:dataUpdate={handleDataUpdate}
+		/>
 	</div>
 	
 	<!-- 社交按钮 -->

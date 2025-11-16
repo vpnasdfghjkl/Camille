@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>焦点任务配置测试</title>
+</head>
+<body>
+    <h1>焦点任务配置测试</h1>
+    <div id="config-display"></div>
+    
+    <script>
+        async function testConfig() {
+            try {
+                const response = await fetch('/api/focus-tasks');
+                const result = await response.json();
+                
+                const display = document.getElementById('config-display');
+                if (result.success) {
+                    display.innerHTML = `
+                        <h2>配置加载成功 ✅</h2>
+                        <p>任务总数: ${result.data.length}</p>
+                        <ul>
+                            ${result.data.map(task => 
+                                `<li>${task.icon} ${task.name} - ${task.description}</li>`
+                            ).join('')}
+                        </ul>
+                    `;
+                } else {
+                    display.innerHTML = `<h2>配置加载失败 ❌</h2><p>${result.error}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('config-display').innerHTML = 
+                    `<h2>请求失败 ❌</h2><p>${error.message}</p>`;
+            }
+        }
+        
+        testConfig();
+    </script>
+</body>
+</html>

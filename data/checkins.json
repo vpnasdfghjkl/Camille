@@ -1,0 +1,246 @@
+[
+  {
+    "id": "checkin_1763268038648_s6dhzqmb7",
+    "date": "2025-11-06",
+    "workPlan": "模拟工作计划 355",
+    "focusTasks": [
+      {
+        "id": "deep-work",
+        "name": "深度工作",
+        "icon": "🎯",
+        "description": "需要专注的核心任务",
+        "isCompleted": false
+      },
+      {
+        "id": "learning",
+        "name": "学习充电",
+        "icon": "📚",
+        "description": "学习新知识或技能",
+        "isCompleted": false
+      },
+      {
+        "id": "planning",
+        "name": "计划整理",
+        "icon": "📋",
+        "description": "制定计划或整理思路",
+        "isCompleted": false
+      },
+      {
+        "id": "communication",
+        "name": "沟通协作",
+        "icon": "💬",
+        "description": "团队沟通或项目协作",
+        "isCompleted": false
+      },
+      {
+        "id": "health",
+        "name": "运动健康",
+        "icon": "💪",
+        "description": "运动锻炼或健康管理",
+        "isCompleted": false
+      },
+      {
+        "id": "side-project",
+        "name": "副业项目",
+        "icon": "🚀",
+        "description": "个人项目或副业发展",
+        "isCompleted": true
+      }
+    ],
+    "focusTasksCompleted": 1,
+    "createdAt": "2025-11-16T04:40:38.647Z",
+    "updatedAt": "2025-11-16T04:41:06.785Z"
+  },
+  {
+    "id": "checkin_1763268078694_p3nqlpdoj",
+    "date": "2025-11-13",
+    "wakeUpTime": "07:00",
+    "workPlan": "模拟工作计划 362",
+    "focusTasks": [
+      {
+        "id": "deep-work",
+        "name": "深度工作",
+        "icon": "🎯",
+        "description": "需要专注的核心任务",
+        "isCompleted": false
+      },
+      {
+        "id": "learning",
+        "name": "学习充电",
+        "icon": "📚",
+        "description": "学习新知识或技能",
+        "isCompleted": false
+      },
+      {
+        "id": "planning",
+        "name": "计划整理",
+        "icon": "📋",
+        "description": "制定计划或整理思路",
+        "isCompleted": false
+      },
+      {
+        "id": "communication",
+        "name": "沟通协作",
+        "icon": "💬",
+        "description": "团队沟通或项目协作",
+        "isCompleted": false
+      },
+      {
+        "id": "health",
+        "name": "运动健康",
+        "icon": "💪",
+        "description": "运动锻炼或健康管理",
+        "isCompleted": false
+      },
+      {
+        "id": "side-project",
+        "name": "副业项目",
+        "icon": "🚀",
+        "description": "个人项目或副业发展",
+        "isCompleted": true
+      }
+    ],
+    "focusTasksCompleted": 1,
+    "notes": "模拟备注",
+    "createdAt": "2025-11-16T04:41:18.693Z",
+    "updatedAt": "2025-11-16T04:41:18.693Z"
+  },
+  {
+    "id": "checkin_1763280556067_vruvb18zj",
+    "date": "2025-11-15",
+    "workPlan": "计划",
+    "focusTasks": [
+      {
+        "id": "graduation-project",
+        "name": "Graduation Project",
+        "icon": "🎓",
+        "description": "毕业设计项目相关工作",
+        "isCompleted": true
+      },
+      {
+        "id": "coding-logical",
+        "name": "Coding/Logical",
+        "icon": "💻",
+        "description": "编程和逻辑思维训练",
+        "isCompleted": true
+      },
+      {
+        "id": "running",
+        "name": "Running",
+        "icon": "🏃",
+        "description": "跑步锻炼，保持健康",
+        "isCompleted": false
+      },
+      {
+        "id": "reading-learning",
+        "name": "Reading/Learning",
+        "icon": "📚",
+        "description": "阅读学习新知识",
+        "isCompleted": false
+      },
+      {
+        "id": "communication",
+        "name": "Communication",
+        "icon": "💬",
+        "description": "团队沟通协作",
+        "isCompleted": false
+      }
+    ],
+    "focusTasksCompleted": 2,
+    "createdAt": "2025-11-16T08:09:16.067Z",
+    "updatedAt": "2025-11-16T08:09:49.654Z"
+  },
+  {
+    "id": "checkin_1763280629551_fhg7atnrg",
+    "date": "2025-03-30",
+    "workPlan": "planning",
+    "focusTasks": [
+      {
+        "id": "graduation-project",
+        "name": "Graduation Project",
+        "icon": "🎓",
+        "description": "毕业设计项目相关工作",
+        "isCompleted": false
+      },
+      {
+        "id": "coding-logical",
+        "name": "Coding/Logical",
+        "icon": "💻",
+        "description": "编程和逻辑思维训练",
+        "isCompleted": false
+      },
+      {
+        "id": "running",
+        "name": "Running",
+        "icon": "🏃",
+        "description": "跑步锻炼，保持健康",
+        "isCompleted": true
+      },
+      {
+        "id": "reading-learning",
+        "name": "Reading/Learning",
+        "icon": "📚",
+        "description": "阅读学习新知识",
+        "isCompleted": false
+      },
+      {
+        "id": "communication",
+        "name": "Communication",
+        "icon": "💬",
+        "description": "团队沟通协作",
+        "isCompleted": false
+      }
+    ],
+    "focusTasksCompleted": 1,
+    "createdAt": "2025-11-16T08:10:29.550Z",
+    "updatedAt": "2025-11-16T08:10:29.550Z"
+  },
+  {
+    "id": "checkin_1763282924443_4ch1fnin8",
+    "date": "2025-11-16",
+    "wakeUpTime": "10:47",
+    "workStartTime": "10:48",
+    "workPlan": "blog更新；dual-system",
+    "focusTasks": [
+      {
+        "id": "graduation-project",
+        "name": "Graduation Project",
+        "icon": "🎓",
+        "description": "毕业设计项目相关工作",
+        "isCompleted": false
+      },
+      {
+        "id": "coding-logical",
+        "name": "Coding/Logical",
+        "icon": "💻",
+        "description": "编程和逻辑思维训练",
+        "isCompleted": false
+      },
+      {
+        "id": "running",
+        "name": "Running",
+        "icon": "🏃",
+        "description": "跑步锻炼，保持健康",
+        "isCompleted": false
+      },
+      {
+        "id": "reading-learning",
+        "name": "Reading/Learning",
+        "icon": "📚",
+        "description": "阅读学习新知识",
+        "isCompleted": false
+      },
+      {
+        "id": "communication",
+        "name": "Communication",
+        "icon": "💬",
+        "description": "团队沟通协作",
+        "isCompleted": false
+      }
+    ],
+    "focusTasksCompleted": 0,
+    "notes": "just go out; or lib or zhengxin;",
+    "createdAt": "2025-11-16T08:48:44.443Z",
+    "updatedAt": "2025-11-16T08:48:44.443Z"
+  }
+]
