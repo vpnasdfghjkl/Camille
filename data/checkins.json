@@ -214,7 +214,7 @@
         "name": "Coding/Logical",
         "icon": "💻",
         "description": "编程和逻辑思维训练",
-        "isCompleted": false
+        "isCompleted": true
       },
       {
         "id": "running",
@@ -228,7 +228,7 @@
         "name": "Reading/Learning",
         "icon": "📚",
         "description": "阅读学习新知识",
-        "isCompleted": false
+        "isCompleted": true
       },
       {
         "id": "communication",
@@ -238,9 +238,9 @@
         "isCompleted": false
       }
     ],
-    "focusTasksCompleted": 0,
+    "focusTasksCompleted": 2,
     "notes": "just go out; or lib or zhengxin;",
     "createdAt": "2025-11-16T08:48:44.443Z",
-    "updatedAt": "2025-11-16T08:48:44.443Z"
+    "updatedAt": "2025-11-16T10:29:04.364Z"
   }
 ]
