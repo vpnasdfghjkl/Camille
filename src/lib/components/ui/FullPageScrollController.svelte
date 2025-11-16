@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import { shouldPreventScroll } from '$lib/stores/scroll';
 	
 	// Props
 	export let sections: string[] = [];
@@ -7,11 +8,17 @@
 	export let onSectionChange: (index: number) => void = () => {};
 	export let isScrolling: boolean = false;
 	
+	// 使用响应式语句来订阅状态
+	$: preventScroll = $shouldPreventScroll;
+	
 	let scrollTimeout: ReturnType<typeof setTimeout>;
 	let touchStartY = 0;
 	let touchEndY = 0;
 	
 	const handleWheel = (e: WheelEvent) => {
+		// 如果模态框打开，不阻止滚动事件
+		if (preventScroll) return;
+		
 		e.preventDefault();
 		
 		if (isScrolling) return;
@@ -43,10 +50,16 @@
 	};
 	
 	const handleTouchMove = (e: TouchEvent) => {
+		// 如果模态框打开，不阻止滚动事件
+		if (preventScroll) return;
+		
 		e.preventDefault(); // 防止页面滚动
 	};
 	
 	const handleTouchEnd = (e: TouchEvent) => {
+		// 如果模态框打开，不处理触摸事件
+		if (preventScroll) return;
+		
 		if (isScrolling) return;
 		
 		touchEndY = e.changedTouches[0].clientY;
@@ -67,6 +80,9 @@
 	
 	// 键盘导航支持
 	const handleKeyDown = (e: KeyboardEvent) => {
+		// 如果模态框打开，不处理键盘事件（除了 Escape）
+		if (preventScroll && e.key !== 'Escape') return;
+		
 		if (isScrolling) return;
 		
 		if (e.key === 'ArrowDown' || e.key === 'PageDown') {

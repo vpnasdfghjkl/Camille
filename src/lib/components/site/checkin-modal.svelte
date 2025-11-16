@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import type { DailyCheckin } from '$lib/types/checkin';
 	import type { FocusTaskConfig } from '$lib/config/focus-tasks';
 	import { convertToFocusTasks } from '$lib/config/focus-tasks';
+	import { enableModalScrolling, disableModalScrolling } from '$lib/stores/scroll';
 	
 	// Props
 	export let isOpen = false;
@@ -109,6 +111,12 @@
 	function closeModal() {
 		isOpen = false;
 		resetForm();
+		// 恢复背景滚动
+		if (browser) {
+			document.body.style.overflow = '';
+			document.body.style.paddingRight = '';
+			disableModalScrolling(); // 确保禁用模态框滚动模式
+		}
 		dispatch('close');
 	}
 
@@ -195,7 +203,7 @@
 		}
 	}
 
-	// 键盘快捷键
+	// 键盘快捷键和滚动控制
 	function handleKeydown(event: KeyboardEvent) {
 		if (!isOpen) return;
 		
@@ -206,10 +214,36 @@
 		}
 	}
 
+	// 防止背景滚动
+	function preventBackgroundScroll() {
+		if (!browser) return; // 只在浏览器环境中运行
+		
+		if (isOpen) {
+			document.body.style.overflow = 'hidden';
+			document.body.style.paddingRight = '0px'; // 防止滚动条闪烁
+			enableModalScrolling(); // 启用模态框滚动模式
+		} else {
+			document.body.style.overflow = '';
+			document.body.style.paddingRight = '';
+			disableModalScrolling(); // 禁用模态框滚动模式
+		}
+	}
+
+	// 监听isOpen变化，控制背景滚动
+	$: if (browser) {
+		preventBackgroundScroll();
+	}
+
 	onMount(() => {
+		if (!browser) return;
+		
 		document.addEventListener('keydown', handleKeydown);
 		return () => {
 			document.removeEventListener('keydown', handleKeydown);
+			// 确保组件卸载时恢复滚动
+			document.body.style.overflow = '';
+			document.body.style.paddingRight = '';
+			disableModalScrolling(); // 确保清理状态
 		};
 	});
 </script>
@@ -224,15 +258,17 @@
 	></button>
 
 	<!-- 模态框 -->
-	<div class="fixed inset-0 flex items-center justify-center p-4 z-50">
+	<div class="fixed inset-0 flex items-start justify-center pt-16 pb-4 px-4 z-50 overflow-y-auto">
 		<div 
-			class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200"
+			class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-xl max-h-[calc(100vh-8rem)] overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col my-8"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="modal-title"
+			on:wheel|stopPropagation
+			on:touchmove|stopPropagation
 		>
 			<!-- 头部 -->
-			<div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+			<div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
 				<div>
 					<h2 id="modal-title" class="text-xl font-semibold text-gray-900 dark:text-white">
 						{existingCheckin ? '编辑' : '新增'}打卡记录
@@ -258,8 +294,10 @@
 			</div>
 
 			<!-- 内容 -->
-			<div class="p-6 max-h-[calc(90vh-8rem)] overflow-y-auto">
-				<form on:submit|preventDefault={handleSubmit} class="space-y-6">
+			<div class="flex-1 overflow-y-auto overscroll-y-contain" 
+				 on:wheel|stopPropagation 
+				 on:touchmove|stopPropagation>
+				<form id="checkin-form" on:submit|preventDefault={handleSubmit} class="p-6 space-y-6 min-h-full">
 					<!-- 时间设置 -->
 					<div class="grid grid-cols-2 gap-4">
 						<div>
@@ -380,46 +418,49 @@
 							<p class="text-sm text-red-700 dark:text-red-400">{errorMessage}</p>
 						</div>
 					{/if}
-
-					<!-- 操作按钮 -->
-					<div class="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-						{#if existingCheckin}
-							<button
-								type="button"
-								on:click={handleDelete}
-								disabled={isLoading}
-								class="px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
-							>
-								删除记录
-							</button>
-						{/if}
-						
-						<div class="flex-1"></div>
-						
+				</form>
+			</div>
+			
+			<!-- 操作按钮 - 固定在底部 -->
+			<div class="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 p-6">
+				<div class="flex gap-3">
+					{#if existingCheckin}
 						<button
 							type="button"
-							on:click={closeModal}
+							on:click={handleDelete}
 							disabled={isLoading}
-							class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors disabled:opacity-50"
+							class="px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
 						>
-							取消
+							删除记录
 						</button>
-						
-						<button
-							type="submit"
-							disabled={isLoading || !workPlan.trim()}
-							class="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
-						>
-							{#if isLoading}
-								<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-									<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-									<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-								</svg>
-							{/if}
-							{existingCheckin ? '更新' : '保存'}
-						</button>
-					</div>
-				</form>
+					{/if}
+					
+					<div class="flex-1"></div>
+					
+					<button
+						type="button"
+						on:click={closeModal}
+						disabled={isLoading}
+						class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors disabled:opacity-50"
+					>
+						取消
+					</button>
+					
+					<button
+						type="submit"
+						form="checkin-form"
+						disabled={isLoading || !workPlan.trim()}
+						class="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+					>
+						{#if isLoading}
+							<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+							</svg>
+						{/if}
+						{existingCheckin ? '更新' : '保存'}
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>
