@@ -142,6 +142,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 	} catch (error) {
+		console.error('❌ 保存打卡记录时发生错误:', error);
+		console.error('📍 错误堆栈:', error instanceof Error ? error.stack : 'No stack trace');
+		
 		const errorResponse: ApiResponse = {
 			success: false,
 			error: error instanceof Error ? error.message : '保存打卡记录失败'

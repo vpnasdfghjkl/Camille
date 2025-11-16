@@ -49,10 +49,13 @@ const DEFAULT_FOCUS_TASKS: FocusTaskConfig[] = [
 // 检查文件系统是否可用
 function isFileSystemAvailable(): boolean {
 	try {
+		// 在 Vercel 和 Netlify 等 serverless 环境中禁用文件系统访问
+		if (process.env.VERCEL || process.env.NETLIFY) {
+			return false;
+		}
+		
 		return typeof process !== 'undefined' && 
-		       typeof process.cwd === 'function' && 
-		       process.env.VERCEL !== '1' &&
-		       process.env.NETLIFY !== 'true';
+		       typeof process.cwd === 'function';
 	} catch {
 		return false;
 	}
@@ -93,6 +96,60 @@ export async function loadFocusTasksConfig(): Promise<FocusTaskConfig[]> {
 				}
 			} catch (error) {
 				console.log('❌ 环境变量配置格式错误');
+			}
+		}
+
+		// 2.1 Vercel 环境特殊处理：尝试使用静态配置
+		if (process.env.VERCEL || process.env.NETLIFY) {
+			console.log('无服务器环境，尝试加载内置配置...');
+			try {
+				// 直接引入静态配置文件内容
+				const staticConfig = [
+					{
+						id: 'graduation-project',
+						name: 'Graduation Project',
+						icon: '🎓',
+						description: '毕业设计项目相关工作',
+						category: 'academic',
+						priority: 1
+					},
+					{
+						id: 'coding-logical',
+						name: 'Coding/Logical',
+						icon: '💻',
+						description: '编程和逻辑思维训练',
+						category: 'technical',
+						priority: 2
+					},
+					{
+						id: 'running',
+						name: 'Running',
+						icon: '🏃',
+						description: '跑步锻炼，保持健康',
+						category: 'health',
+						priority: 3
+					},
+					{
+						id: 'reading-learning',
+						name: 'Reading/Learning',
+						icon: '📚',
+						description: '阅读学习新知识',
+						category: 'learning',
+						priority: 4
+					},
+					{
+						id: 'communication',
+						name: 'Communication',
+						icon: '💬',
+						description: '团队沟通协作',
+						category: 'social',
+						priority: 5
+					}
+				];
+				console.log('✅ 从内置配置加载焦点任务配置');
+				return staticConfig;
+			} catch (error) {
+				console.log('❌ 内置配置加载失败');
 			}
 		}
 

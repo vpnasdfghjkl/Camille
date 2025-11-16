@@ -1,4 +1,3 @@
-import { dev } from '$app/environment';
 import type { DailyCheckin } from '$lib/types/checkin';
 
 // 存储接口定义
@@ -128,7 +127,9 @@ class MemoryAdapter implements StorageAdapter {
 
 	async saveCheckin(checkin: DailyCheckin): Promise<void> {
 		this.checkinsStore.set(checkin.date, checkin);
-		console.log(`已保存打卡记录到内存: ${checkin.date}`);
+		console.log(`✅ 已保存打卡记录到内存: ${checkin.date}`);
+		console.log(`📊 内存中总记录数: ${this.checkinsStore.size}`);
+		console.log(`📝 保存的数据:`, JSON.stringify(checkin, null, 2));
 	}
 
 	async deleteCheckin(date: string): Promise<boolean> {
@@ -246,9 +247,16 @@ class StorageSelector {
 		// 检测环境并选择最佳适配器
 		console.log('检测存储环境...');
 		
-		// 1. 开发环境优先使用文件系统
-		if (dev) {
-			console.log('开发环境，尝试使用文件系统存储');
+		// 1. 检测无服务器环境（Vercel, Netlify 等）
+		if (process.env.VERCEL || process.env.NETLIFY) {
+			console.log('检测到无服务器环境 (Vercel/Netlify)，使用内存存储');
+			this.adapter = new MemoryAdapter();
+			return this.adapter;
+		}
+		
+		// 2. 开发环境或传统服务器环境，尝试使用文件系统
+		if (typeof process !== 'undefined' && typeof process.cwd === 'function') {
+			console.log('尝试使用文件系统存储...');
 			try {
 				const fsAdapter = new FileSystemAdapter();
 				// 测试文件系统是否可用
@@ -257,25 +265,11 @@ class StorageSelector {
 				console.log('✅ 使用文件系统存储');
 				return this.adapter;
 			} catch (error) {
-				console.log('❌ 文件系统不可用，降级到内存存储');
+				console.log('❌ 文件系统不可用，降级到内存存储:', error);
 			}
 		}
 
-		// 2. 检测是否为服务器环境且支持文件系统
-		if (typeof process !== 'undefined' && typeof process.cwd === 'function') {
-			console.log('服务器环境，尝试使用文件系统存储');
-			try {
-				const fsAdapter = new FileSystemAdapter();
-				await fsAdapter.getAllCheckins();
-				this.adapter = fsAdapter;
-				console.log('✅ 使用文件系统存储');
-				return this.adapter;
-			} catch (error) {
-				console.log('❌ 服务器文件系统不可用');
-			}
-		}
-
-		// 3. 无服务器环境，使用内存存储
+		// 3. 降级到内存存储
 		console.log('使用内存存储（注意：重启后数据会丢失）');
 		console.log('💡 建议：生产环境请配置数据库存储');
 		this.adapter = new MemoryAdapter();
