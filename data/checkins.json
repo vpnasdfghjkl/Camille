@@ -198,9 +198,9 @@
   {
     "id": "checkin_1763282924443_4ch1fnin8",
     "date": "2025-11-16",
-    "wakeUpTime": "10:47",
-    "workStartTime": "10:48",
-    "workPlan": "blog更新；dual-system",
+    "wakeUpTime": "19:13",
+    "workStartTime": "19:13",
+    "workPlan": "coding",
     "focusTasks": [
       {
         "id": "graduation-project",
@@ -228,7 +228,7 @@
         "name": "Reading/Learning",
         "icon": "📚",
         "description": "阅读学习新知识",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "id": "communication",
@@ -238,9 +238,102 @@
         "isCompleted": false
       }
     ],
-    "focusTasksCompleted": 2,
-    "notes": "just go out; or lib or zhengxin;",
+    "focusTasksCompleted": 1,
     "createdAt": "2025-11-16T08:48:44.443Z",
-    "updatedAt": "2025-11-16T10:29:04.364Z"
+    "updatedAt": "2025-11-16T11:14:16.248Z"
+  },
+  {
+    "id": "checkin_1763289870651_s5gt6wjwn",
+    "date": "2025-11-17",
+    "wakeUpTime": "07:43",
+    "workStartTime": "09:00",
+    "workPlan": "coding",
+    "focusTasks": [
+      {
+        "id": "graduation-project",
+        "name": "Graduation Project",
+        "icon": "🎓",
+        "description": "毕业设计项目相关工作",
+        "isCompleted": false
+      },
+      {
+        "id": "coding-logical",
+        "name": "Coding/Logical",
+        "icon": "💻",
+        "description": "编程和逻辑思维训练",
+        "isCompleted": false
+      },
+      {
+        "id": "running",
+        "name": "Running",
+        "icon": "🏃",
+        "description": "跑步锻炼，保持健康",
+        "isCompleted": false
+      },
+      {
+        "id": "reading-learning",
+        "name": "Reading/Learning",
+        "icon": "📚",
+        "description": "阅读学习新知识",
+        "isCompleted": false
+      },
+      {
+        "id": "communication",
+        "name": "Communication",
+        "icon": "💬",
+        "description": "团队沟通协作",
+        "isCompleted": true
+      }
+    ],
+    "focusTasksCompleted": 1,
+    "createdAt": "2025-11-16T10:44:30.651Z",
+    "updatedAt": "2025-11-16T10:44:30.651Z"
+  },
+  {
+    "id": "checkin_1763291645166_pcmb3zj4z",
+    "date": "2025-11-09",
+    "wakeUpTime": "19:13",
+    "workStartTime": "19:14",
+    "workPlan": "coding",
+    "focusTasks": [
+      {
+        "id": "graduation-project",
+        "name": "Graduation Project",
+        "icon": "🎓",
+        "description": "毕业设计项目相关工作",
+        "isCompleted": true
+      },
+      {
+        "id": "coding-logical",
+        "name": "Coding/Logical",
+        "icon": "💻",
+        "description": "编程和逻辑思维训练",
+        "isCompleted": true
+      },
+      {
+        "id": "running",
+        "name": "Running",
+        "icon": "🏃",
+        "description": "跑步锻炼，保持健康",
+        "isCompleted": true
+      },
+      {
+        "id": "reading-learning",
+        "name": "Reading/Learning",
+        "icon": "📚",
+        "description": "阅读学习新知识",
+        "isCompleted": true
+      },
+      {
+        "id": "communication",
+        "name": "Communication",
+        "icon": "💬",
+        "description": "团队沟通协作",
+        "isCompleted": true
+      }
+    ],
+    "focusTasksCompleted": 5,
+    "createdAt": "2025-11-16T11:14:05.165Z",
+    "updatedAt": "2025-11-16T11:14:13.522Z"
   }
 ]

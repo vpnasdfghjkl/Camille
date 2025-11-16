@@ -7,7 +7,7 @@ import {
 	deleteCheckin, 
 	getCheckinsInRange, 
 	getAllCheckins 
-} from '$lib/server/checkin-storage';
+} from '$lib/server/checkin-storage-universal';
 
 // 生成ID
 function generateId(): string {

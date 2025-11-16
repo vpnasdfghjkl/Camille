@@ -140,6 +140,8 @@
 				notes: notes.trim() || undefined
 			};
 
+			console.log('提交打卡数据:', checkinData);
+
 			const response = await fetch('/api/checkin', {
 				method: 'POST',
 				headers: {
@@ -148,17 +150,26 @@
 				body: JSON.stringify(checkinData)
 			});
 
+			console.log('响应状态:', response.status, response.statusText);
+
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			}
+
 			const result = await response.json();
+			console.log('API 响应:', result);
 
 			if (result.success && result.data) {
+				console.log('保存成功，关闭模态框');
 				dispatch('save', result.data);
 				closeModal();
 			} else {
 				errorMessage = result.error || '保存失败，请重试';
+				console.error('API 返回错误:', result.error);
 			}
 		} catch (error) {
 			console.error('保存打卡记录失败:', error);
-			errorMessage = '网络错误，请检查连接';
+			errorMessage = `网络错误: ${error instanceof Error ? error.message : '请检查连接'}`;
 		} finally {
 			isLoading = false;
 		}

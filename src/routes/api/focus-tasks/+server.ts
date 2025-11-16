@@ -1,18 +1,15 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
+import { loadFocusTasksConfig } from '$lib/config/focus-tasks-universal';
 
 export const GET: RequestHandler = async () => {
 	try {
-		// 从 static 目录读取配置文件
-		const configPath = join(process.cwd(), 'static/config/focus-tasks.json');
-		const configContent = await readFile(configPath, 'utf-8');
-		const config = JSON.parse(configContent);
+		// 使用通用配置加载器
+		const focusTasks = await loadFocusTasksConfig();
 		
 		return json({
 			success: true,
-			data: config.focusTasks || []
+			data: focusTasks
 		});
 	} catch (error) {
 		console.error('Failed to load focus tasks config:', error);
