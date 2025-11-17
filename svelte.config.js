@@ -10,9 +10,7 @@ const config = {
 	preprocess: [mdsvex(mdsvexOptions), vitePreprocess({})],
 
 	kit: {
-		adapter: adapter({
-			runtime: 'nodejs18.x'
-		})
+		adapter: adapter()
 	}
 };
 
