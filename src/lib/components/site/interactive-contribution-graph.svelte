@@ -217,6 +217,7 @@
 		                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 		
 		let currentMonth = -1;
+		let lastLabelWeek = -1;
 		
 		contributionWeeks.forEach((week, weekIndex) => {
 			const firstDay = week[0];
@@ -224,8 +225,10 @@
 				const date = new Date(firstDay.date);
 				const monthIndex = date.getMonth();
 				
-				if (monthIndex !== currentMonth && weekIndex % 4 === 0) {
+				// 当月份变化且距离上一个标签至少3周时才显示
+				if (monthIndex !== currentMonth && weekIndex - lastLabelWeek >= 3) {
 					currentMonth = monthIndex;
+					lastLabelWeek = weekIndex;
 					labels.push({
 						month: monthNames[monthIndex],
 						week: weekIndex
@@ -483,10 +486,10 @@
 				<div class="flex">
 					<!-- 星期标签 -->
 					<div class="flex flex-col text-xs text-gray-500 dark:text-gray-400 pr-2">
-						<div class="h-3 mb-1 flex items-center justify-end" aria-label="Sunday"></div>
-						<div class="h-3 mb-1 flex items-center justify-end">Mon</div>
+						<div class="h-3 mb-5 flex items-center justify-end" aria-label="Sunday"></div>
+						<div class="h-3 mb-6 flex items-center justify-end">Mon</div>
 						<div class="h-3 mb-1 flex items-center justify-end" aria-label="Tuesday"></div>
-						<div class="h-3 mb-1 flex items-center justify-end">Wed</div>
+						<div class="h-3 mb-6 flex items-center justify-end">Wed</div>
 						<div class="h-3 mb-1 flex items-center justify-end" aria-label="Thursday"></div>
 						<div class="h-3 mb-1 flex items-center justify-end">Fri</div>
 						<div class="h-3 flex items-center justify-end" aria-label="Saturday"></div>

@@ -36,7 +36,7 @@
 					class:bg-blue-600={Math.random() > 0.9}
 					class:bg-gray-100={Math.random() <= 0.7}
 					class:dark:bg-gray-700={Math.random() <= 0.7}
-					style="animation: grid-shimmer 2s ease-in-out infinite {(i % 7) * 0.1}s;"
+					style="animation: grid-shimmer 0.4s ease-in-out infinite {(i % 7) * 0.02}s;"
 				></div>
 			{/each}
 		</div>
@@ -102,10 +102,12 @@
 	
 	@keyframes grid-shimmer {
 		0%, 100% {
-			opacity: 0.3;
+			opacity: 0.2;
+			transform: scale(0.9);
 		}
 		50% {
 			opacity: 1;
+			transform: scale(1.1);
 		}
 	}
 	
