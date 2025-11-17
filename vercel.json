@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "src/routes/api/**/*.ts": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

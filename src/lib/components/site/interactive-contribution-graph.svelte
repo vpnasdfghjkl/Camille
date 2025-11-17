@@ -3,6 +3,7 @@
 	import type { ContributionDay, MonthLabel, FocusArea } from '$lib/types/contribution';
 	import type { CalendarState, DailyCheckin } from '$lib/types/checkin';
 	import CheckinModal from './checkin-modal.svelte';
+	import LoadingAnimation from '$lib/components/ui/loading-animation.svelte';
 	import { loadFocusTasksConfig } from '$lib/config/focus-tasks-universal';
 	import type { FocusTaskConfig } from '$lib/config/focus-tasks';
 
@@ -45,13 +46,14 @@
 		}
 	});
 
-	// 加载真实数据
-	async function loadRealData() {
+	// 加载真实数据 (使用优化的 API)
+	async function loadRealData(forceRefresh = false) {
 		try {
 			isLoading = true;
 			error = '';
 			
-			const response = await fetch('/api/stats?days=365');
+			const refreshParam = forceRefresh ? '&refresh=true' : '';
+			const response = await fetch(`/api/stats?days=365${refreshParam}`);
 			const result = await response.json();
 			
 			if (result.success) {
@@ -60,6 +62,7 @@
 				if (calendarState) {
 					dispatch('dataUpdate', calendarState);
 				}
+				console.log('✅ 贡献图数据已加载', result.cached ? '(缓存)' : '(新数据)');
 			} else {
 				throw new Error(result.error || '获取数据失败');
 			}
@@ -269,7 +272,7 @@
 		const dateStr = typeof day.date === 'string' ? day.date : day.date.toISOString().split('T')[0];
 		selectedDate = dateStr;
 		
-		// 从API获取完整的打卡数据
+		// 从 Supabase API 获取完整的打卡数据
 		try {
 			const response = await fetch(`/api/checkin?date=${dateStr}`);
 			const result = await response.json();
@@ -302,10 +305,13 @@
 
 	async function handleModalSave(event: CustomEvent<DailyCheckin>) {
 		const checkin = event.detail;
+		console.log('🔄 模态框保存事件，强制刷新数据...', checkin);
 		
-		// 如果使用真实数据，重新加载
+		// 无论是真实数据还是模拟数据，都重新加载以确保状态同步
 		if (useRealData) {
-			await loadRealData();
+			// 🎯 强制刷新真实数据（绕过缓存）
+			await loadRealData(true);
+			console.log('✅ 真实数据已强制刷新');
 		} else {
 			// 更新模拟数据
 			const dateStr = checkin.date;
@@ -316,14 +322,18 @@
 			});
 
 			if (existingIndex >= 0) {
-				// 动态获取任务总数
-				const totalFocusTasks = checkin.focusTasks?.length || 6;
+				// 使用配置中的任务总数，而不是当前记录的任务数
+				const totalFocusTasks = focusTasksConfig.length || 6;
+				const completedTasks = checkin.focusTasksCompleted || 0;
+				const isAllCompleted = completedTasks >= totalFocusTasks;
+				
+				console.log(`📊 任务统计 - 完成: ${completedTasks}, 总数: ${totalFocusTasks}, 完美日: ${isAllCompleted}`);
 				
 				contributions[existingIndex] = {
 					...contributions[existingIndex],
-					level: checkin.focusTasksCompleted,
-					count: checkin.focusTasksCompleted,
-					isAllCompleted: checkin.focusTasksCompleted >= totalFocusTasks, // 动态判断完美日
+					level: completedTasks,
+					count: completedTasks,
+					isAllCompleted: isAllCompleted,
 					hasCheckin: true,
 					workPlan: checkin.workPlan,
 					wakeUpTime: checkin.wakeUpTime,
@@ -335,6 +345,7 @@
 			if (calendarState) {
 				calendarState.contributions = contributions;
 				processCalendarData();
+				console.log('✅ 模拟数据已更新，重新处理日历');
 			}
 		}
 		
@@ -425,10 +436,26 @@
 	</div>
 
 	{#if isLoading}
-		<div class="flex items-center justify-center py-12">
-			<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-			<span class="ml-3 text-gray-600 dark:text-gray-400">加载中...</span>
-		</div>
+		<!-- 🎨 多种优雅的加载动画选择 -->
+		
+		<!-- 当前使用: 网格动画 (模拟贡献图样式) -->
+		<LoadingAnimation type="grid" message="正在加载贡献数据..." />
+		
+		<!-- 其他可选动画类型:
+		
+		脉动圆点 (简洁现代):
+		<LoadingAnimation type="dots" message="正在加载贡献数据..." />
+		
+		波浪动画 (活力动感):
+		<LoadingAnimation type="wave" message="正在加载贡献数据..." />
+		
+		骨架屏 (仿真界面):
+		<LoadingAnimation type="skeleton" message="正在加载贡献数据..." />
+		
+		图表动画 (圆形进度):
+		<LoadingAnimation type="chart" message="正在加载贡献数据..." />
+		
+		-->
 	{:else if error}
 		<div class="text-center py-12">
 			<p class="text-red-600 dark:text-red-400 mb-4">{error}</p>

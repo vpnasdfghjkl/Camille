@@ -5,7 +5,6 @@ export { default as BlogHero } from './bloghero.svelte';
 export { default as BlogMetatags } from './blog-metatags.svelte';
 export { default as Blogcard } from './blogcard.svelte';
 export { default as ComboBox } from './combobox.svelte';
-export { default as ContributionGraph } from './contribution-graph.svelte';
 export { default as FeaturedProjects } from './featured-projects.svelte';
 export { default as Footer } from './footer.svelte';
 export { default as Hero } from './hero.svelte';

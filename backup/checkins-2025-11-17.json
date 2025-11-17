@@ -245,37 +245,37 @@
   {
     "id": "checkin_1763289870651_s5gt6wjwn",
     "date": "2025-11-17",
-    "wakeUpTime": "12:20",
-    "workStartTime": "12:20",
-    "workPlan": "coding / papering /",
+    "wakeUpTime": "07:43",
+    "workStartTime": "09:00",
+    "workPlan": "coding",
     "focusTasks": [
       {
         "id": "graduation-project",
         "name": "Graduation Project",
         "icon": "🎓",
         "description": "毕业设计项目相关工作",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "id": "coding-logical",
         "name": "Coding/Logical",
         "icon": "💻",
         "description": "编程和逻辑思维训练",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "id": "running",
         "name": "Running",
         "icon": "🏃",
         "description": "跑步锻炼，保持健康",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "id": "reading-learning",
         "name": "Reading/Learning",
         "icon": "📚",
         "description": "阅读学习新知识",
-        "isCompleted": true
+        "isCompleted": false
       },
       {
         "id": "communication",
@@ -285,9 +285,9 @@
         "isCompleted": true
       }
     ],
-    "focusTasksCompleted": 5,
+    "focusTasksCompleted": 1,
     "createdAt": "2025-11-16T10:44:30.651Z",
-    "updatedAt": "2025-11-17T04:20:54.438Z"
+    "updatedAt": "2025-11-16T10:44:30.651Z"
   },
   {
     "id": "checkin_1763291645166_pcmb3zj4z",

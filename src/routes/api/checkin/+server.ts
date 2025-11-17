@@ -1,22 +1,11 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { supabaseCheckinService } from '$lib/server/supabase-checkin-service';
 import type { DailyCheckin, ApiResponse } from '$lib/types/checkin';
-import { 
-	getCheckin, 
-	saveCheckin, 
-	deleteCheckin, 
-	getCheckinsInRange, 
-	getAllCheckins 
-} from '$lib/server/checkin-storage-universal';
 
 // 生成ID
 function generateId(): string {
 	return `checkin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
-
-// 格式化日期为 YYYY-MM-DD
-function formatDate(date: Date): string {
-	return date.toISOString().split('T')[0];
 }
 
 // GET - 获取打卡记录
@@ -28,7 +17,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		if (date) {
 			// 获取指定日期的打卡记录
-			const checkin = await getCheckin(date);
+			const checkin = await supabaseCheckinService.getCheckin(date);
 			const response: ApiResponse<DailyCheckin | null> = {
 				success: true,
 				data: checkin
@@ -38,7 +27,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		if (startDate && endDate) {
 			// 获取日期范围内的打卡记录
-			const rangeCheckins = await getCheckinsInRange(startDate, endDate);
+			const rangeCheckins = await supabaseCheckinService.getCheckinsInRange(startDate, endDate);
 			const response: ApiResponse<DailyCheckin[]> = {
 				success: true,
 				data: rangeCheckins
@@ -47,7 +36,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		}
 
 		// 获取所有打卡记录
-		const allCheckins = await getAllCheckins();
+		const allCheckins = await supabaseCheckinService.getAllCheckins();
 			
 		const allResponse: ApiResponse<DailyCheckin[]> = {
 			success: true,
@@ -56,6 +45,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		return json(allResponse);
 
 	} catch (error) {
+		console.error('❌ API 获取数据失败:', error);
 		const errorResponse: ApiResponse = {
 			success: false,
 			error: error instanceof Error ? error.message : '获取打卡记录失败'
@@ -89,11 +79,11 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json(errorResponse, { status: 400 });
 		}
 
-		const formattedDate = formatDate(dateObj);
+		const formattedDate = dateObj.toISOString().split('T')[0];
 		const now = new Date().toISOString();
 
 		// 检查是否已存在记录
-		const existingCheckin = await getCheckin(formattedDate);
+		const existingCheckin = await supabaseCheckinService.getCheckin(formattedDate);
 		
 		if (existingCheckin) {
 			// 更新现有记录
@@ -108,11 +98,11 @@ export const POST: RequestHandler = async ({ request }) => {
 				updatedAt: now
 			};
 			
-			await saveCheckin(updatedCheckin);
+			const result = await supabaseCheckinService.saveCheckin(updatedCheckin);
 			
 			const response: ApiResponse<DailyCheckin> = {
 				success: true,
-				data: updatedCheckin,
+				data: result,
 				message: '打卡记录已更新'
 			};
 			return json(response);
@@ -131,11 +121,11 @@ export const POST: RequestHandler = async ({ request }) => {
 				updatedAt: now
 			};
 			
-			await saveCheckin(newCheckin);
+			const result = await supabaseCheckinService.saveCheckin(newCheckin);
 			
 			const response: ApiResponse<DailyCheckin> = {
 				success: true,
-				data: newCheckin,
+				data: result,
 				message: '打卡记录已创建'
 			};
 			return json(response);
@@ -143,7 +133,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	} catch (error) {
 		console.error('❌ 保存打卡记录时发生错误:', error);
-		console.error('📍 错误堆栈:', error instanceof Error ? error.stack : 'No stack trace');
 		
 		const errorResponse: ApiResponse = {
 			success: false,
@@ -166,7 +155,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 			return json(errorResponse, { status: 400 });
 		}
 
-		const deleted = await deleteCheckin(date);
+		const deleted = await supabaseCheckinService.deleteCheckin(date);
 		
 		if (deleted) {
 			const successResponse: ApiResponse = {
@@ -183,6 +172,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 		}
 
 	} catch (error) {
+		console.error('❌ 删除打卡记录失败:', error);
 		const errorResponse: ApiResponse = {
 			success: false,
 			error: error instanceof Error ? error.message : '删除打卡记录失败'
