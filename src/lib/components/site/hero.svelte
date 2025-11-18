@@ -81,7 +81,7 @@
 	<!-- 交互式 Recent Focus 贡献图 -->
 	<div class="mt-8">
 		<InteractiveContributionGraph 
-			title="🎯 Daily Focus Tracker"
+			title="Daily Focus Tracker"
 			showFocusAreas={true}
 			useRealData={true}
 			on:dayClick={handleDayClick}

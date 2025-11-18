@@ -251,22 +251,22 @@
 	// 获取级别对应的CSS类 (保持原有蓝色系设计)
 	function getContributionClass(level: number, isAllCompleted?: boolean): string {
 		if (isAllCompleted) {
-			return 'bg-gradient-to-br from-yellow-300 to-yellow-400 border-yellow-400 shadow-md';
+			return 'bg-gradient-to-br from-yellow-300 to-yellow-400 shadow-md';
 		}
 		
 		const maxLevel = getTotalFocusTasks();
 		switch(level) {
-			case 0: return 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700';
-			case 1: return 'bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800';
-			case 2: return 'bg-blue-200 dark:bg-blue-800/60 border-blue-300 dark:border-blue-700';
-			case 3: return 'bg-blue-300 dark:bg-blue-700/80 border-blue-400 dark:border-blue-600';
-			case 4: return 'bg-blue-400 dark:bg-blue-600 border-blue-500 dark:border-blue-500';
-			case 5: return 'bg-blue-500 dark:bg-blue-500 border-blue-600 dark:border-blue-400';
+			case 0: return 'bg-gray-200 dark:bg-gray-700';
+			case 1: return 'bg-blue-100 dark:bg-blue-900/40';
+			case 2: return 'bg-blue-200 dark:bg-blue-800/60';
+			case 3: return 'bg-blue-300 dark:bg-blue-700/80';
+			case 4: return 'bg-blue-400 dark:bg-blue-600';
+			case 5: return 'bg-blue-500 dark:bg-blue-500';
 			default: 
 				if (level >= maxLevel) {
-					return 'bg-blue-600 dark:bg-blue-400 border-blue-700 dark:border-blue-300';
+					return 'bg-blue-600 dark:bg-blue-400';
 				}
-				return 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700';
+				return 'bg-gray-200 dark:bg-gray-700';
 		}
 	}
 
@@ -408,7 +408,7 @@
 </script>
 
 <!-- 交互式贡献图 -->
-<div class="bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700 rounded-lg p-5 w-full
+<div class="bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700 rounded-lg p-5 pr-0 w-fit
 			shadow-lg shadow-orange-500/20 dark:shadow-blue-500/30
 			ring-1 ring-orange-200/50 dark:ring-blue-400/30
 			hover:shadow-xl hover:shadow-orange-500/30 dark:hover:shadow-blue-500/40
@@ -416,49 +416,31 @@
 			transition-all duration-300">
 	
 	<!-- 标题和关注领域 -->
-	<div class="flex items-center gap-4 mb-5">
+	<div class="flex items-center justify-between mb-5 pr-5">
 		<h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider">
 			{title}
 		</h3>
 		
 		{#if showFocusAreas && focusAreas.length > 0}
-			<!-- 项目列表 -->
-			<div class="flex flex-wrap gap-2">
+			<!-- 项目列表 - 简洁样式 -->
+			<div class="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
 				{#each focusAreas as area}
-					<span class="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 
-								text-blue-700 dark:text-blue-300 text-xs font-medium rounded-sm 
-								border border-blue-200 dark:border-blue-700">
-						{area.icon} {area.name}
+					<div class="flex items-center gap-1.5">
+						<span class="font-medium text-gray-700 dark:text-gray-300">{area.name}</span>
 						{#if area.count !== undefined}
-							<span class="text-blue-600 dark:text-blue-400">({area.count})</span>
+							<span class="text-gray-500 dark:text-gray-500">{area.count}</span>
 						{/if}
-					</span>
+					</div>
+					{#if focusAreas.indexOf(area) < focusAreas.length - 1}
+						<span class="text-gray-400 dark:text-gray-600">·</span>
+					{/if}
 				{/each}
 			</div>
 		{/if}
 	</div>
 
 	{#if isLoading}
-		<!-- 🎨 多种优雅的加载动画选择 -->
-		
-		<!-- 当前使用: 网格动画 (模拟贡献图样式) -->
 		<LoadingAnimation type="grid" message="正在加载贡献数据..." />
-		
-		<!-- 其他可选动画类型:
-		
-		脉动圆点 (简洁现代):
-		<LoadingAnimation type="dots" message="正在加载贡献数据..." />
-		
-		波浪动画 (活力动感):
-		<LoadingAnimation type="wave" message="正在加载贡献数据..." />
-		
-		骨架屏 (仿真界面):
-		<LoadingAnimation type="skeleton" message="正在加载贡献数据..." />
-		
-		图表动画 (圆形进度):
-		<LoadingAnimation type="chart" message="正在加载贡献数据..." />
-		
-		-->
 	{:else if error}
 		<div class="text-center py-12">
 			<p class="text-red-600 dark:text-red-400 mb-4">{error}</p>
@@ -470,12 +452,11 @@
 			</button>
 		</div>
 	{:else}
-		<!-- 贡献图和右侧信息的容器 -->
-		<div class="flex gap-8">
-			<!-- 贡献图容器 -->
-			<div class="contribution-graph flex-1">
+		<!-- 贡献图容器 -->
+		<div class="contribution-graph">
+			<div class="flex-1">
 				<!-- 月份标签 -->
-				<div class="relative flex mb-1 text-xs text-gray-500 dark:text-gray-400 ml-8 h-3">
+				<div class="relative flex mb-1 text-xs text-gray-500 dark:text-gray-400 ml-8 h-3 pr-5">
 					{#each monthLabels as label}
 						<span class="absolute" style="left: {label.week * 16}px;">
 							{label.month}
@@ -483,27 +464,27 @@
 					{/each}
 				</div>
 				
-				<div class="flex">
+				<div class="flex pr-5">
 					<!-- 星期标签 -->
-					<div class="flex flex-col text-xs text-gray-500 dark:text-gray-400 pr-2">
-						<div class="h-3 mb-5 flex items-center justify-end" aria-label="Sunday"></div>
-						<div class="h-3 mb-6 flex items-center justify-end">Mon</div>
-						<div class="h-3 mb-1 flex items-center justify-end" aria-label="Tuesday"></div>
-						<div class="h-3 mb-6 flex items-center justify-end">Wed</div>
-						<div class="h-3 mb-1 flex items-center justify-end" aria-label="Thursday"></div>
-						<div class="h-3 mb-1 flex items-center justify-end">Fri</div>
-						<div class="h-3 flex items-center justify-end" aria-label="Saturday"></div>
+					<div class="flex flex-col text-xs text-gray-500 dark:text-gray-400 pr-2 leading-none">
+						<div class="h-3 mb-[6.5px] flex items-center justify-end leading-none" aria-label="Sunday"></div>
+						<div class="h-3 mb-[6.5px] flex items-center justify-end leading-none">Mon</div>
+						<div class="h-3 mb-[6.5px] flex items-center justify-end leading-none" aria-label="Tuesday"></div>
+						<div class="h-3 mb-[6.5px] flex items-center justify-end leading-none">Wed</div>
+						<div class="h-3 mb-[6.5px] flex items-center justify-end leading-none" aria-label="Thursday"></div>
+						<div class="h-3 mb-[6.5px] flex items-center justify-end leading-none">Fri</div>
+						<div class="h-3 flex items-center justify-end leading-none" aria-label="Saturday"></div>
 					</div>
 
 					<!-- 贡献方格网格 -->
 					<div class="flex gap-1">
 						{#each contributionWeeks as week}
-							<div class="flex flex-col gap-0.5">
+							<div class="flex flex-col gap-[2px]">
 								{#each week as day}
-									<div class="relative group">
+									<div class="relative group leading-none">
 										<button 
 											class="w-3 h-3 {getContributionClass(day.level, day.isAllCompleted)} 
-												   rounded-sm border transition-all duration-200 
+												   rounded-sm transition-all duration-200 
 												   hover:ring-2 hover:ring-blue-300 hover:ring-offset-1
 												   hover:scale-125 cursor-pointer
 												   {day.isToday ? 'ring-2 ring-blue-500 ring-offset-1 dark:ring-offset-slate-800' : ''}"
@@ -548,52 +529,67 @@
 					</div>
 				</div>
 			</div>
-
-			<!-- 右侧信息区域 -->
-			<div class="flex flex-col justify-between min-w-[200px] space-y-2">
-				<!-- 贡献统计和年份 -->
-				<div class="space-y-1.5">
-					<h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">
-						{totalContributions} contributions in the last year
-					</h4>
-					<div class="text-xs text-gray-500 dark:text-gray-400">{currentYear}</div>
+			
+			<!-- 底部信息栏 - 图例和统计数据 -->
+			<div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between text-xs pr-5">
+				<!-- 左侧：图例 -->
+				<div class="flex items-center gap-2 text-[11px]">
+					<span class="text-gray-500 dark:text-gray-400">Less</span>
+					<div class="flex gap-1" aria-label="Contribution levels">
+						<div class="w-3 h-3 bg-gray-200 dark:bg-gray-700 rounded-sm" 
+							 title="无任务" aria-label="Level 0"></div>
+						<div class="w-3 h-3 bg-blue-100 dark:bg-blue-900/40 rounded-sm" 
+							 title="1个任务" aria-label="Level 1"></div>
+						<div class="w-3 h-3 bg-blue-200 dark:bg-blue-800/60 rounded-sm" 
+							 title="2个任务" aria-label="Level 2"></div>
+						<div class="w-3 h-3 bg-blue-300 dark:bg-blue-700/80 rounded-sm" 
+							 title="3个任务" aria-label="Level 3"></div>
+						<div class="w-3 h-3 bg-blue-400 dark:bg-blue-600 rounded-sm" 
+							 title="4个任务" aria-label="Level 4"></div>
+						<div class="w-3 h-3 bg-blue-500 dark:bg-blue-500 rounded-sm" 
+							 title="5个任务" aria-label="Level 5"></div>
+						<div class="w-3 h-3 bg-gradient-to-br from-yellow-300 to-yellow-400 rounded-sm" 
+							 title="完美一天 (所有任务)" aria-label="Perfect day"></div>
+					</div>
+					<span class="text-gray-500 dark:text-gray-400">More</span>
+				</div>
+				
+				<!-- 右侧：统计信息 -->
+				<div class="flex items-center gap-3 text-[11px]">
+					<!-- 总贡献数 -->
+					<div class="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
+						<span class="font-semibold text-gray-900 dark:text-gray-100">{totalContributions}</span>
+						<span>contributions in {currentYear}</span>
+					</div>
+					
 					{#if stats}
-						<div class="text-xs text-gray-500 dark:text-gray-400 space-y-0.5 pt-1.5">
-							<div>连续打卡: {stats.currentStreak} 天</div>
-							<div>最长连续: {stats.longestStreak} 天</div>
-							<div>完成率: {stats.completionRate}%</div>
+						<!-- 分隔符 -->
+						<span class="text-gray-400 dark:text-gray-600">·</span>
+						
+						<!-- 当前连续 -->
+						<div class="flex items-center gap-1">
+							<span class="text-gray-500 dark:text-gray-400">Current:</span>
+							<span class="font-medium text-orange-600 dark:text-orange-400">{stats.currentStreak} days</span>
+						</div>
+						
+						<!-- 分隔符 -->
+						<span class="text-gray-400 dark:text-gray-600">·</span>
+						
+						<!-- 最长连续 -->
+						<div class="flex items-center gap-1">
+							<span class="text-gray-500 dark:text-gray-400">Longest:</span>
+							<span class="font-medium text-blue-600 dark:text-blue-400">{stats.longestStreak} days</span>
+						</div>
+						
+						<!-- 分隔符 -->
+						<span class="text-gray-400 dark:text-gray-600">·</span>
+						
+						<!-- 完成率 -->
+						<div class="flex items-center gap-1">
+							<span class="text-gray-500 dark:text-gray-400">Rate:</span>
+							<span class="font-medium text-green-600 dark:text-green-400">{stats.completionRate}%</span>
 						</div>
 					{/if}
-				</div>
-
-				<!-- 图例 -->
-				<div class="space-y-1.5">
-					<div class="text-xs text-gray-500 dark:text-gray-400">
-						Learn how we count contributions
-					</div>
-					<div class="flex items-center gap-2">
-						<span class="text-xs text-gray-500 dark:text-gray-400">Less</span>
-						<div class="flex gap-1" aria-label="Contribution levels">
-							<div class="w-3 h-3 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm" 
-								 title="无任务" aria-label="Level 0"></div>
-							<div class="w-3 h-3 bg-blue-100 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800 rounded-sm" 
-								 title="1个任务" aria-label="Level 1"></div>
-							<div class="w-3 h-3 bg-blue-200 dark:bg-blue-800/60 border border-blue-300 dark:border-blue-700 rounded-sm" 
-								 title="2个任务" aria-label="Level 2"></div>
-							<div class="w-3 h-3 bg-blue-300 dark:bg-blue-700/80 border border-blue-400 dark:border-blue-600 rounded-sm" 
-								 title="3个任务" aria-label="Level 3"></div>
-							<div class="w-3 h-3 bg-blue-400 dark:bg-blue-600 border border-blue-500 dark:border-blue-500 rounded-sm" 
-								 title="4个任务" aria-label="Level 4"></div>
-							<div class="w-3 h-3 bg-blue-500 dark:bg-blue-500 border border-blue-600 dark:border-blue-400 rounded-sm" 
-								 title="5个任务" aria-label="Level 5"></div>
-							<div class="w-3 h-3 bg-gradient-to-br from-yellow-300 to-yellow-400 border border-yellow-400 rounded-sm" 
-								 title="完美一天 (所有任务)" aria-label="Perfect day"></div>
-						</div>
-						<span class="text-xs text-gray-500 dark:text-gray-400">More</span>
-					</div>
-					<div class="text-xs text-gray-500 dark:text-gray-400 pt-0.5">
-						点击方格进行打卡
-					</div>
 				</div>
 			</div>
 		</div>
