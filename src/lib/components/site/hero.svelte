@@ -30,34 +30,16 @@
 	}
 </script>
 
-<div class="md:container">
-	<div class="items-center justify-between mt-5 md:mt-6 md:flex md:flex-row">
-		<!-- 响应式头像组件 -->
-		<div class="mx-auto md:mx-0 md:self-center md:mr-10 mb-6 md:mb-0 order-1 md:order-2">
-			<Avatar 
-				profileImage={ProfilePicture}
-				{hoverImage}
-				alt="Camille"
-				size="medium"
-				enableHover={true}
-				enableAnimations={true}
-			/>
-		</div>
-
-		<!-- 内容区域 -->
-		<div class="space-y-3 md:w-3/5 md:mr-4 order-2 md:order-1">
-			<div class="flex flex-col gap-4 border border-border p-2 bg-slate-100 dark:bg-zinc-900 
-						rounded-xl mt-6 md:mt-0 text-primary">
-				<div class="flex items-center gap-4">
-					<Mailbox />
-					<h1 class="font-semibold">What's New?</h1>
-				</div>
-				<div>{@html whatsNew}</div>
-			</div>
-
+<!-- Hero Section Container -->
+<div class="w-full">
+	<!-- Profile and Content Wrapper -->
+	<div class="w-full max-w-[1920px] mx-auto px-4 md:px-6">
+		<div class="grid grid-cols-1 lg:grid-cols-6 gap-2 mt-2 md:mt-2 mb-12">
+		<!-- Text Content Section -->
+		<div class="lg:col-span-4 space-y-3 order-2 lg:order-1">
 			<h1 class="font-bold md:text-xl">Hi, I'm</h1>
 			
-			<h1 class="text-2xl font-bold md:text-5xl bg-gradient-to-r from-blue-600 via-blue-500 to-pink-500 
+			<h1 class="text-2xl font-bold md:text-5xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 
 					   text-transparent bg-clip-text min-h-[3rem] md:min-h-[4rem] flex items-center">
 				<TypewriterText 
 					texts={heroTexts}
@@ -75,20 +57,60 @@
 				enjoy writing technical blogs and sharing my journey with others. If you'd like to get in touch, feel
 				free to reach out to me.
 			</p>
+
+			<div class="pt-2">
+				<SocialButtons />
+			</div>
+		</div>
+
+		<!-- Avatar Section -->
+		<div class="lg:col-span-2 flex items-center justify-center lg:justify-end order-1 lg:order-2 mb-6 lg:mb-0">
+			<Avatar 
+				profileImage={ProfilePicture}
+				{hoverImage}
+				alt="Camille"
+				size="medium"
+				enableHover={true}
+				enableAnimations={true}
+			/>
 		</div>
 	</div>
-	
-	<!-- 交互式 Recent Focus 贡献图 -->
-	<div class="mt-8">
-		<InteractiveContributionGraph 
-			title="Daily Focus Tracker"
-			showFocusAreas={true}
-			useRealData={true}
-			on:dayClick={handleDayClick}
-			on:dataUpdate={handleDataUpdate}
-		/>
 	</div>
 	
-	<!-- 社交按钮 -->
-	<SocialButtons />
+	<!-- Dashboard Grid Section -->
+	<div class="w-full max-w-[1920px] mx-auto px-4 md:px-6">
+		<div class="grid grid-cols-1 lg:grid-cols-5 gap-2 mb-8 items-stretch">
+		<!-- What's New Widget -->
+		<div class="lg:col-span-1">
+			<div class="h-full bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
+				<div class="flex items-center gap-3 mb-4">
+					<div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-500 ring-1 ring-cyan-500/20">
+						<Mailbox size={18} />
+					</div>
+					<div>
+						<h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
+							What's New
+						</h3>
+						<p class="text-[10px] text-slate-500 font-mono mt-0.5">LATEST UPDATES</p>
+					</div>
+				</div>
+				<div class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+					{@html whatsNew}
+				</div>
+			</div>
+		</div>
+
+		<!-- Contribution Graph Widget -->
+		<div class="lg:col-span-4">
+			<InteractiveContributionGraph 
+				title="Activity Log"
+				showFocusAreas={true}
+				useRealData={true}
+				on:dayClick={handleDayClick}
+				on:dataUpdate={handleDataUpdate}
+			/>
+		</div>
+		
+	</div>
+	</div>
 </div>

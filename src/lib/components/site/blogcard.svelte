@@ -77,8 +77,8 @@
 		</div>
 	</div>
 	{#if isSeries(post)}
-		<div class="absolute -top-3 right-4 px-2 bg-zinc-200 dark:bg-zinc-800 rounded-lg">
-			<p class="text-black dark:text-white">Series</p>
+		<div class="absolute -top-3 right-4 px-2 bg-slate-200 dark:bg-slate-800 rounded-lg">
+			<p class="text-slate-900 dark:text-slate-100">Series</p>
 		</div>
 	{/if}
 </a>

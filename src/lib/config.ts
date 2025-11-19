@@ -28,6 +28,10 @@ export const routes: routesType[] = [
 		link: '/projects'
 	},
 	{
+		name: 'Lab',
+		link: '/lab'
+	},
+	{
 		name: 'About',
 		link: '/about'
 	}

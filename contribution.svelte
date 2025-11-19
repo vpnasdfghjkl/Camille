@@ -1,0 +1,663 @@
+<script lang="ts">
+	import { createEventDispatcher, onMount } from 'svelte';
+	import type { ContributionDay, MonthLabel, FocusArea } from '$lib/types/contribution';
+	import type { CalendarState, DailyCheckin } from '$lib/types/checkin';
+	import CheckinModal from './checkin-modal.svelte';
+	import LoadingAnimation from '$lib/components/ui/loading-animation.svelte';
+	import { loadFocusTasksConfig } from '$lib/config/focus-tasks-universal';
+	import type { FocusTaskConfig } from '$lib/config/focus-tasks';
+
+	// Props
+	export let title = '年度工作打卡图';
+	export let showFocusAreas = true;
+	export let useRealData = true; // 是否使用真实数据
+
+	// 派发事件
+	const dispatch = createEventDispatcher<{
+		dayClick: { date: string; checkin?: DailyCheckin };
+		dataUpdate: CalendarState;
+	}>();
+
+	// 状态
+	let calendarState: CalendarState | null = null;
+	let contributionWeeks: ContributionDay[][] = [];
+	let monthLabels: MonthLabel[] = [];
+	let isLoading = true;
+	let error = '';
+	
+	// 模态框状态
+	let showModal = false;
+	let selectedDate: string | null = null;
+	let selectedCheckin: DailyCheckin | null = null;
+
+	// 统计信息
+	let totalContributions = 0;
+	let currentYear = new Date().getFullYear();
+
+	onMount(async () => {
+		// 首先加载焦点任务配置
+		focusTasksConfig = await loadFocusTasksConfig();
+		console.log('✅ 加载焦点任务配置:', focusTasksConfig);
+		
+		if (useRealData) {
+			await loadRealData();
+		} else {
+			loadMockData();
+		}
+	});
+
+	// 加载真实数据 (使用优化的 API)
+	async function loadRealData(forceRefresh = false) {
+		try {
+			isLoading = true;
+			error = '';
+			
+			console.log('🔵 [前端] 开始加载数据...');
+			console.log('📋 [前端] 参数:', { forceRefresh, days: 365 });
+			
+			const refreshParam = forceRefresh ? '&refresh=true' : '';
+			const apiUrl = `/api/stats?days=365${refreshParam}`;
+			console.log('🌐 [前端] API URL:', apiUrl);
+			
+			const response = await fetch(apiUrl);
+			console.log('📡 [前端] Response 状态:', response.status, response.statusText);
+			
+			const result = await response.json();
+			console.log('📦 [前端] 原始返回数据:', result);
+			
+			if (result.success) {
+				console.log('✅ [前端] API 调用成功');
+				console.log('📊 [前端] 数据概览:', {
+					contributions数量: result.data.contributions?.length,
+					stats: result.data.stats,
+					focusAreas: result.data.focusAreas?.map((a: FocusArea) => ({ name: a.name, count: a.count })),
+					dateRange: result.data.dateRange,
+					是否缓存: result.cached
+				});
+				
+				calendarState = result.data;
+				console.log('💾 [前端] calendarState 已更新:', calendarState);
+				
+				processCalendarData();
+				console.log('🔄 [前端] processCalendarData 执行完毕');
+				console.log('📈 [前端] contributionWeeks 数量:', contributionWeeks.length);
+				console.log('📈 [前端] monthLabels:', monthLabels);
+				
+				if (calendarState) {
+					dispatch('dataUpdate', calendarState);
+					console.log('📤 [前端] 已派发 dataUpdate 事件');
+				}
+			} else {
+				throw new Error(result.error || '获取数据失败');
+			}
+		} catch (err) {
+			console.error('❌ [前端] 加载贡献图数据失败:', err);
+			console.error('❌ [前端] 错误详情:', {
+				message: err instanceof Error ? err.message : '未知错误',
+				stack: err instanceof Error ? err.stack : undefined
+			});
+			error = err instanceof Error ? err.message : '加载数据失败';
+			// 降级到模拟数据
+			console.log('🔄 [前端] 降级到模拟数据');
+			loadMockData();
+		} finally {
+			isLoading = false;
+			console.log('🏁 [前端] loadRealData 执行完毕');
+		}
+	}
+
+	// 生成模拟数据
+	function loadMockData() {
+		const contributions = generateMockContributionData();
+		calendarState = {
+			contributions,
+			stats: {
+				totalDays: 365,
+				checkedInDays: 180,
+				totalTasks: 450,
+				avgTasksPerDay: 1.2,
+				currentStreak: 7,
+				longestStreak: 23,
+				completionRate: 49
+			},
+			focusAreas: focusTasksConfig.map((task, index) => ({
+				name: task.name,
+				icon: task.icon,
+				count: [120, 90, 60, 30, 20, 10][index] || 10, // 模拟数据
+				percentage: [40, 30, 20, 10, 5, 5][index] || 5
+			})),
+			dateRange: {
+				start: new Date(Date.now() - 364 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+				end: new Date().toISOString().split('T')[0]
+			}
+		};
+		processCalendarData();
+		isLoading = false;
+	}
+
+	// 生成过去一年的模拟贡献数据
+	function generateMockContributionData(): ContributionDay[] {
+		const contributions: ContributionDay[] = [];
+		const today = new Date();
+		const startDate = new Date(today);
+		startDate.setDate(today.getDate() - 364);
+
+		for (let i = 0; i < 365; i++) {
+			const currentDate = new Date(startDate);
+			currentDate.setDate(startDate.getDate() + i);
+
+			// 获取焦点任务总数
+			const totalFocusTasks = getTotalFocusTasks();
+			
+			// 模拟数据：随机生成贡献级别 (0到totalFocusTasks个任务)
+			const level = Math.random() > 0.3 ? Math.floor(Math.random() * (totalFocusTasks + 1)) : 0;
+			const count = level;
+			const hasCheckin = level > 0;
+
+			const dateStr = currentDate.toISOString().split('T')[0];
+			
+			contributions.push({
+				date: dateStr,
+				level,
+				count,
+				isAllCompleted: level >= totalFocusTasks, // 所有任务完成才是完美日
+				isToday: dateStr === today.toISOString().split('T')[0],
+				month: currentDate.getMonth(),
+				day: currentDate.getDate(),
+				hasCheckin,
+				workPlan: hasCheckin ? `模拟工作计划 ${i + 1}` : undefined,
+				wakeUpTime: hasCheckin && Math.random() > 0.5 ? '07:00' : undefined,
+				workStartTime: hasCheckin && Math.random() > 0.5 ? '09:00' : undefined,
+				notes: hasCheckin && Math.random() > 0.7 ? '模拟备注' : undefined
+			});
+		}
+
+		return contributions;
+	}
+
+	// 处理日历数据，转换为周格式
+	function processCalendarData() {
+		console.log('🔄 [前端-数据处理] 开始处理日历数据');
+		if (!calendarState?.contributions) {
+			console.log('⚠️ [前端-数据处理] calendarState 或 contributions 为空，跳过处理');
+			return;
+		}
+
+		const contributions = calendarState.contributions;
+		console.log('📊 [前端-数据处理] contributions 数量:', contributions.length);
+		console.log('📊 [前端-数据处理] 前3条数据示例:', contributions.slice(0, 3));
+		
+		// 确保从周日开始排列
+		const weeks: ContributionDay[][] = [];
+		let currentWeek: ContributionDay[] = [];
+		
+		// 找到第一个日期并确保从周日开始
+		const firstDate = typeof contributions[0]?.date === 'string' 
+			? new Date(contributions[0].date) 
+			: contributions[0]?.date || new Date();
+		
+		const firstDayOfWeek = firstDate.getDay(); // 0=周日
+		
+		// 如果不是从周日开始，前面补空白
+		for (let i = 0; i < firstDayOfWeek; i++) {
+			const emptyDate = new Date(firstDate);
+			emptyDate.setDate(firstDate.getDate() - (firstDayOfWeek - i));
+			currentWeek.push({
+				date: emptyDate.toISOString().split('T')[0],
+				level: 0,
+				count: 0,
+				hasCheckin: false
+			});
+		}
+
+		// 添加实际数据
+		contributions.forEach((day) => {
+			// 确保日期为字符串格式
+			const dayData: ContributionDay = {
+				...day,
+				date: typeof day.date === 'string' ? day.date : day.date.toISOString().split('T')[0]
+			};
+			
+			currentWeek.push(dayData);
+
+			if (currentWeek.length === 7) {
+				weeks.push([...currentWeek]);
+				currentWeek = [];
+			}
+		});
+
+		// 补齐最后一周
+		while (currentWeek.length > 0 && currentWeek.length < 7) {
+			const lastDate = new Date(currentWeek[currentWeek.length - 1].date);
+			lastDate.setDate(lastDate.getDate() + 1);
+			currentWeek.push({
+				date: lastDate.toISOString().split('T')[0],
+				level: 0,
+				count: 0,
+				hasCheckin: false
+			});
+		}
+		if (currentWeek.length === 7) {
+			weeks.push(currentWeek);
+		}
+
+		contributionWeeks = weeks;
+		totalContributions = contributions.reduce((sum, day) => sum + day.count, 0);
+		monthLabels = generateMonthLabels();
+		
+		console.log('✅ [前端-数据处理] 处理完成');
+		console.log('📈 [前端-数据处理] 生成的周数:', contributionWeeks.length);
+		console.log('📈 [前端-数据处理] 总贡献数:', totalContributions);
+		console.log('📈 [前端-数据处理] 月份标签:', monthLabels);
+	}
+
+	// 生成月份标签
+	function generateMonthLabels(): MonthLabel[] {
+		const labels: MonthLabel[] = [];
+		const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+		                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+		
+		let currentMonth = -1;
+		let lastLabelWeek = -1;
+		
+		contributionWeeks.forEach((week, weekIndex) => {
+			const firstDay = week[0];
+			if (firstDay) {
+				const date = new Date(firstDay.date);
+				const monthIndex = date.getMonth();
+				
+				// 当月份变化且距离上一个标签至少3周时才显示
+				if (monthIndex !== currentMonth && weekIndex - lastLabelWeek >= 3) {
+					currentMonth = monthIndex;
+					lastLabelWeek = weekIndex;
+					labels.push({
+						month: monthNames[monthIndex],
+						week: weekIndex
+					});
+				}
+			}
+		});
+
+		return labels;
+	}
+
+	// 焦点任务配置（动态加载）
+	let focusTasksConfig: FocusTaskConfig[] = [];
+	
+	// 获取焦点任务总数的工具函数
+	function getTotalFocusTasks(): number {
+		return focusTasksConfig.length || 6; // 默认6个任务
+	}
+
+	// 获取级别对应的CSS类 (保持原有蓝色系设计)
+	function getContributionClass(level: number, isAllCompleted?: boolean): string {
+		if (isAllCompleted) {
+			return 'bg-gradient-to-br from-yellow-300 to-yellow-400 shadow-md';
+		}
+		
+		const maxLevel = getTotalFocusTasks();
+		switch(level) {
+			case 0: return 'bg-gray-200 dark:bg-gray-700';
+			case 1: return 'bg-blue-100 dark:bg-blue-900/40';
+			case 2: return 'bg-blue-200 dark:bg-blue-800/60';
+			case 3: return 'bg-blue-300 dark:bg-blue-700/80';
+			case 4: return 'bg-blue-400 dark:bg-blue-600';
+			case 5: return 'bg-blue-500 dark:bg-blue-500';
+			default: 
+				if (level >= maxLevel) {
+					return 'bg-blue-600 dark:bg-blue-400';
+				}
+				return 'bg-gray-200 dark:bg-gray-700';
+		}
+	}
+
+	// 处理日期点击
+	async function handleDayClick(day: ContributionDay) {
+		console.log('🖱️ [前端] 用户点击日期方块');
+		console.log('📅 [前端] 点击的日期数据:', day);
+		
+		const dateStr = typeof day.date === 'string' ? day.date : day.date.toISOString().split('T')[0];
+		selectedDate = dateStr;
+		console.log('📅 [前端] 格式化后的日期:', dateStr);
+		
+		// 从 Supabase API 获取完整的打卡数据
+		try {
+			const apiUrl = `/api/checkin?date=${dateStr}`;
+			console.log('🌐 [前端] 请求单日数据 URL:', apiUrl);
+			
+			const response = await fetch(apiUrl);
+			console.log('📡 [前端] Response 状态:', response.status);
+			
+			const result = await response.json();
+			console.log('📦 [前端] 单日数据返回:', result);
+			
+			if (result.success && result.data) {
+				selectedCheckin = result.data;
+				console.log('✅ [前端] 找到打卡记录:', selectedCheckin);
+			} else {
+				// 如果没有数据，创建空的记录
+				selectedCheckin = null;
+				console.log('ℹ️ [前端] 该日期无打卡记录，准备创建新记录');
+			}
+		} catch (error) {
+			console.error('❌ [前端] 获取打卡数据失败:', error);
+			selectedCheckin = null;
+		}
+		
+		showModal = true;
+		console.log('🪟 [前端] 打开模态框');
+		
+		dispatch('dayClick', { 
+			date: dateStr, 
+			checkin: selectedCheckin || undefined 
+		});
+		console.log('📤 [前端] 派发 dayClick 事件');
+	}
+
+	// 处理模态框事件
+	function handleModalClose() {
+		showModal = false;
+		selectedDate = null;
+		selectedCheckin = null;
+	}
+
+	async function handleModalSave(event: CustomEvent<DailyCheckin>) {
+		const checkin = event.detail;
+		console.log('🔄 模态框保存事件，强制刷新数据...', checkin);
+		
+		// 无论是真实数据还是模拟数据，都重新加载以确保状态同步
+		if (useRealData) {
+			// 🎯 强制刷新真实数据（绕过缓存）
+			await loadRealData(true);
+			console.log('✅ 真实数据已强制刷新');
+		} else {
+			// 更新模拟数据
+			const dateStr = checkin.date;
+			const contributions = calendarState?.contributions || [];
+			const existingIndex = contributions.findIndex(c => {
+				const cDate = typeof c.date === 'string' ? c.date : c.date.toISOString().split('T')[0];
+				return cDate === dateStr;
+			});
+
+			if (existingIndex >= 0) {
+				// 使用配置中的任务总数，而不是当前记录的任务数
+				const totalFocusTasks = focusTasksConfig.length || 6;
+				const completedTasks = checkin.focusTasksCompleted || 0;
+				const isAllCompleted = completedTasks >= totalFocusTasks;
+				
+				console.log(`📊 任务统计 - 完成: ${completedTasks}, 总数: ${totalFocusTasks}, 完美日: ${isAllCompleted}`);
+				
+				contributions[existingIndex] = {
+					...contributions[existingIndex],
+					level: completedTasks,
+					count: completedTasks,
+					isAllCompleted: isAllCompleted,
+					hasCheckin: true,
+					workPlan: checkin.workPlan,
+					wakeUpTime: checkin.wakeUpTime,
+					workStartTime: checkin.workStartTime,
+					notes: checkin.notes
+				};
+			}
+
+			if (calendarState) {
+				calendarState.contributions = contributions;
+				processCalendarData();
+				console.log('✅ 模拟数据已更新，重新处理日历');
+			}
+		}
+		
+		handleModalClose();
+	}
+
+	async function handleModalDelete(event: CustomEvent<string>) {
+		const date = event.detail;
+		
+		// 如果使用真实数据，重新加载
+		if (useRealData) {
+			await loadRealData();
+		} else {
+			// 更新模拟数据
+			const contributions = calendarState?.contributions || [];
+			const existingIndex = contributions.findIndex(c => {
+				const cDate = typeof c.date === 'string' ? c.date : c.date.toISOString().split('T')[0];
+				return cDate === date;
+			});
+
+			if (existingIndex >= 0) {
+				contributions[existingIndex] = {
+					...contributions[existingIndex],
+					level: 0,
+					count: 0,
+					hasCheckin: false,
+					workPlan: undefined,
+					wakeUpTime: undefined,
+					workStartTime: undefined,
+					notes: undefined
+				};
+			}
+
+			if (calendarState) {
+				calendarState.contributions = contributions;
+				processCalendarData();
+			}
+		}
+		
+		handleModalClose();
+	}
+
+	// 格式化提示信息
+	function getTooltipText(day: ContributionDay): string {
+		const dateStr = typeof day.date === 'string' ? day.date : day.date.toLocaleDateString('zh-CN');
+		
+		if (day.hasCheckin) {
+			return `${dateStr}\n完成 ${day.count} 个Focus任务${day.workPlan ? '\n计划: ' + day.workPlan : ''}`;
+		}
+		
+		return `${dateStr}\n点击添加打卡记录`;
+	}
+
+	// 响应式数据
+	$: focusAreas = calendarState?.focusAreas || [];
+	$: stats = calendarState?.stats;
+</script>
+
+<!-- 交互式贡献图 -->
+<div class="bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700 rounded-lg p-5 pr-0 w-fit
+			shadow-lg shadow-orange-500/20 dark:shadow-blue-500/30
+			ring-1 ring-orange-200/50 dark:ring-blue-400/30
+			hover:shadow-xl hover:shadow-orange-500/30 dark:hover:shadow-blue-500/40
+			hover:ring-orange-300/60 dark:hover:ring-blue-400/50
+			transition-all duration-300">
+	
+	<!-- 标题和关注领域 -->
+	<div class="flex items-center justify-between mb-2 pr-5">
+		<h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider">
+			{title}
+		</h3>
+		
+		{#if showFocusAreas && focusAreas.length > 0}
+			<!-- 项目列表 - 简洁样式 -->
+			<div class="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
+				{#each focusAreas as area}
+					<div class="flex items-center gap-1.5">
+						<span class="font-medium text-gray-700 dark:text-gray-300">{area.name}</span>
+						{#if area.count !== undefined}
+							<span class="text-gray-500 dark:text-gray-500">{area.count}</span>
+						{/if}
+					</div>
+					{#if focusAreas.indexOf(area) < focusAreas.length - 1}
+						<span class="text-gray-400 dark:text-gray-600">·</span>
+					{/if}
+				{/each}
+			</div>
+		{/if}
+	</div>
+
+	{#if isLoading}
+		<LoadingAnimation type="grid" message="正在加载贡献数据..." />
+	{:else if error}
+		<div class="text-center py-12">
+			<p class="text-red-600 dark:text-red-400 mb-4">{error}</p>
+			<button 
+				on:click={() => loadRealData()}
+				class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+			>
+				重试
+			</button>
+		</div>
+	{:else}
+		<!-- 贡献图容器 -->
+		<div class="contribution-graph">
+			<div class="flex-1">
+				<!-- 月份标签 -->
+				<div class="relative flex mb-1 text-xs text-gray-500 dark:text-gray-400 ml-8 h-3 pr-5">
+					{#each monthLabels as label}
+						<span class="absolute" style="left: {label.week * 16}px;">
+							{label.month}
+						</span>
+					{/each}
+				</div>
+				
+				<div class="flex pr-5">
+					<!-- 星期标签 -->
+					<div class="flex flex-col text-xs text-gray-500 dark:text-gray-400 pr-2 leading-none">
+						<div class="h-3 mb-[6.5px] flex items-center justify-end leading-none" aria-label="Sunday"></div>
+						<div class="h-3 mb-[6.5px] flex items-center justify-end leading-none">Mon</div>
+						<div class="h-3 mb-[6.5px] flex items-center justify-end leading-none" aria-label="Tuesday"></div>
+						<div class="h-3 mb-[6.5px] flex items-center justify-end leading-none">Wed</div>
+						<div class="h-3 mb-[6.5px] flex items-center justify-end leading-none" aria-label="Thursday"></div>
+						<div class="h-3 mb-[6.5px] flex items-center justify-end leading-none">Fri</div>
+						<div class="h-3 flex items-center justify-end leading-none" aria-label="Saturday"></div>
+					</div>
+
+					<!-- 贡献方格网格 -->
+					<div class="flex gap-1">
+						{#each contributionWeeks as week}
+							<div class="flex flex-col gap-[2px]">
+								{#each week as day}
+									<div class="relative group leading-none">
+										<button 
+											class="w-3 h-3 {getContributionClass(day.level, day.isAllCompleted)} 
+												   rounded-sm transition-all duration-200 
+												   hover:ring-2 hover:ring-blue-300 hover:ring-offset-1
+												   hover:scale-125 cursor-pointer
+												   {day.isToday ? 'ring-2 ring-blue-500 ring-offset-1 dark:ring-offset-slate-800' : ''}"
+											title={getTooltipText(day)}
+											on:click={() => handleDayClick(day)}
+											aria-label="打卡记录 {day.date} - 级别 {day.level}"
+										>
+											{#if day.isAllCompleted}
+												<div class="absolute inset-0 flex items-center justify-center">
+													<span class="text-white text-[6px]" aria-hidden="true">★</span>
+												</div>
+											{/if}
+										</button>
+										
+										<!-- 悬停提示 -->
+										<div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 
+													bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 
+													rounded shadow-lg opacity-0 group-hover:opacity-100 
+													transition-opacity duration-200 pointer-events-none 
+													whitespace-nowrap z-50 max-w-48">
+											<div class="font-medium">{day.count || 0} contributions</div>
+											<div class="text-gray-300">{typeof day.date === 'string' ? new Date(day.date).toLocaleDateString() : day.date.toLocaleDateString()}</div>
+											{#if day.hasCheckin && day.workPlan}
+												<div class="text-blue-300 truncate">{day.workPlan}</div>
+											{/if}
+											{#if !day.hasCheckin}
+												<div class="text-green-300">点击添加打卡</div>
+											{/if}
+											{#if day.isAllCompleted}
+												<div class="text-yellow-300">🎉 Perfect day!</div>
+											{/if}
+											<!-- 小箭头 -->
+											<div class="absolute top-full left-1/2 transform -translate-x-1/2 
+														w-0 h-0 border-l-2 border-r-2 border-t-2 
+														border-transparent border-t-gray-900 dark:border-t-gray-700">
+											</div>
+										</div>
+									</div>
+								{/each}
+							</div>
+						{/each}
+					</div>
+				</div>
+			</div>
+			
+			<!-- 底部信息栏 - 图例和统计数据 -->
+			<div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between text-xs pr-5">
+				<!-- 左侧：图例 -->
+				<div class="flex items-center gap-2 text-[11px]">
+					<span class="text-gray-500 dark:text-gray-400">Less</span>
+					<div class="flex gap-1" aria-label="Contribution levels">
+						<div class="w-3 h-3 bg-gray-200 dark:bg-gray-700 rounded-sm" 
+							 title="无任务" aria-label="Level 0"></div>
+						<div class="w-3 h-3 bg-blue-100 dark:bg-blue-900/40 rounded-sm" 
+							 title="1个任务" aria-label="Level 1"></div>
+						<div class="w-3 h-3 bg-blue-200 dark:bg-blue-800/60 rounded-sm" 
+							 title="2个任务" aria-label="Level 2"></div>
+						<div class="w-3 h-3 bg-blue-300 dark:bg-blue-700/80 rounded-sm" 
+							 title="3个任务" aria-label="Level 3"></div>
+						<div class="w-3 h-3 bg-blue-400 dark:bg-blue-600 rounded-sm" 
+							 title="4个任务" aria-label="Level 4"></div>
+						<div class="w-3 h-3 bg-blue-500 dark:bg-blue-500 rounded-sm" 
+							 title="5个任务" aria-label="Level 5"></div>
+						<div class="w-3 h-3 bg-gradient-to-br from-yellow-300 to-yellow-400 rounded-sm" 
+							 title="完美一天 (所有任务)" aria-label="Perfect day"></div>
+					</div>
+					<span class="text-gray-500 dark:text-gray-400">More</span>
+				</div>
+				
+				<!-- 右侧：统计信息 -->
+				<div class="flex items-center gap-3 text-[11px]">
+					<!-- 总贡献数 -->
+					<div class="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
+						<span class="font-semibold text-gray-900 dark:text-gray-100">{totalContributions}</span>
+						<span>contributions in {currentYear}</span>
+					</div>
+					
+					{#if stats}
+						<!-- 分隔符 -->
+						<span class="text-gray-400 dark:text-gray-600">·</span>
+						
+						<!-- 当前连续 -->
+						<div class="flex items-center gap-1">
+							<span class="text-gray-500 dark:text-gray-400">Current:</span>
+							<span class="font-medium text-orange-600 dark:text-orange-400">{stats.currentStreak} days</span>
+						</div>
+						
+						<!-- 分隔符 -->
+						<span class="text-gray-400 dark:text-gray-600">·</span>
+						
+						<!-- 最长连续 -->
+						<div class="flex items-center gap-1">
+							<span class="text-gray-500 dark:text-gray-400">Longest:</span>
+							<span class="font-medium text-blue-600 dark:text-blue-400">{stats.longestStreak} days</span>
+						</div>
+						
+						<!-- 分隔符 -->
+						<span class="text-gray-400 dark:text-gray-600">·</span>
+						
+						<!-- 完成率 -->
+						<div class="flex items-center gap-1">
+							<span class="text-gray-500 dark:text-gray-400">Rate:</span>
+							<span class="font-medium text-green-600 dark:text-green-400">{stats.completionRate}%</span>
+						</div>
+					{/if}
+				</div>
+			</div>
+		</div>
+	{/if}
+</div>
+
+<!-- 打卡模态框 -->
+<CheckinModal
+	bind:isOpen={showModal}
+	bind:selectedDate
+	bind:existingCheckin={selectedCheckin}
+	focusTasksConfig={focusTasksConfig}
+	on:close={handleModalClose}
+	on:save={handleModalSave}
+	on:delete={handleModalDelete}
+/>

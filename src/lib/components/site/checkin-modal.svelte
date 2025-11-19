@@ -278,7 +278,7 @@
 {#if isOpen}
 	<!-- 遮罩层 -->
 	<button
-		class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 animate-in fade-in duration-200 border-0 p-0 cursor-default"
+		class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 animate-in fade-in duration-200 border-0 p-0 cursor-default"
 		on:click={closeModal}
 		aria-label="关闭对话框"
 		tabindex="-1"
@@ -287,7 +287,7 @@
 	<!-- 模态框 -->
 	<div class="fixed inset-0 flex items-start justify-center pt-16 pb-4 px-4 z-50 overflow-y-auto">
 		<div 
-			class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-xl max-h-[calc(100vh-8rem)] overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col my-8"
+			class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-xl max-h-[calc(100vh-8rem)] overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col my-8 ring-1 ring-slate-900/5"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="modal-title"
@@ -295,12 +295,13 @@
 			on:touchmove|stopPropagation
 		>
 			<!-- 头部 -->
-			<div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+			<div class="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 flex-shrink-0 bg-slate-50/50 dark:bg-slate-900/50">
 				<div>
-					<h2 id="modal-title" class="text-xl font-semibold text-gray-900 dark:text-white">
-						{existingCheckin ? '编辑' : '新增'}打卡记录
+					<h2 id="modal-title" class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+						<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+						{existingCheckin ? 'Edit Check-in' : 'New Check-in'}
 					</h2>
-					<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+					<p class="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
 						{selectedDate ? new Date(selectedDate).toLocaleDateString('zh-CN', { 
 							year: 'numeric', 
 							month: 'long', 
@@ -311,7 +312,7 @@
 				</div>
 				<button
 					on:click={closeModal}
-					class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+					class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
 					aria-label="关闭"
 				>
 					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -328,45 +329,45 @@
 					<!-- 时间设置 -->
 					<div class="grid grid-cols-2 gap-4">
 						<div>
-							<label for="wake-time" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-								起床时间
+							<label for="wake-time" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+								Wake Up Time
 							</label>
 							<div class="flex gap-2">
 								<input
 									id="wake-time"
 									type="time"
 									bind:value={wakeUpTime}
-									class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white"
+									class="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white transition-all"
 								/>
 								<button
 									type="button"
 									on:click={() => setCurrentTime('wake')}
-									class="px-3 py-2 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+									class="px-3 py-2 text-xs font-medium text-slate-600 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
 									title="设为当前时间"
 								>
-									现在
+									Now
 								</button>
 							</div>
 						</div>
 
 						<div>
-							<label for="work-time" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-								工作开始时间
+							<label for="work-time" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+								Work Start
 							</label>
 							<div class="flex gap-2">
 								<input
 									id="work-time"
 									type="time"
 									bind:value={workStartTime}
-									class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white"
+									class="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white transition-all"
 								/>
 								<button
 									type="button"
 									on:click={() => setCurrentTime('work')}
-									class="px-3 py-2 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+									class="px-3 py-2 text-xs font-medium text-slate-600 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
 									title="设为当前时间"
 								>
-									现在
+									Now
 								</button>
 							</div>
 						</div>
@@ -374,51 +375,55 @@
 
 					<!-- 工作计划 -->
 					<div>
-						<label for="work-plan" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							今日工作计划 <span class="text-red-500">*</span>
+						<label for="work-plan" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+							Daily Plan <span class="text-blue-500">*</span>
 						</label>
 						<textarea
 							id="work-plan"
 							bind:value={workPlan}
-							placeholder="描述你今天的主要工作内容和目标..."
+							placeholder="What are your main goals for today?"
 							rows="3"
 							required
-							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none dark:bg-gray-800 dark:text-white placeholder-gray-400"
+							class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none dark:text-white placeholder-slate-400 transition-all"
 						></textarea>
 					</div>
 
 					<!-- Focus任务选择 -->
 					<fieldset>
-						<legend class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-							Focus任务完成情况 ({focusTasks.filter(task => task.isCompleted).length}/{focusTasks.length})
+						<legend class="flex items-center justify-between w-full mb-3">
+							<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Focus Tasks</span>
+							<span class="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300">
+								{focusTasks.filter(task => task.isCompleted).length}/{focusTasks.length} Completed
+							</span>
 						</legend>
 						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 							{#each focusTasks as task, index}
-								<label class="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all {
-									task.isCompleted 
-										? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600' 
-										: 'hover:bg-gray-50 dark:hover:bg-gray-800'
-								}">
-									<input
-										type="checkbox"
-										bind:checked={task.isCompleted}
-										on:change={() => {
-											console.log(`Task ${task.name} toggled to:`, task.isCompleted);
-											focusTasksCompleted = focusTasks.filter(t => t.isCompleted).length;
-											console.log('Total completed tasks:', focusTasksCompleted);
-										}}
-										class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-									/>
-									<div class="flex items-center gap-2 flex-1">
-										<span class="text-lg">{task.icon}</span>
-										<div class="flex-1">
-											<div class="font-medium text-gray-900 dark:text-gray-100 text-sm">
+								<label class="relative flex items-start gap-3 p-3 border rounded-xl cursor-pointer transition-all duration-200 group
+									{task.isCompleted 
+										? 'bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800' 
+										: 'bg-white dark:bg-slate-800/30 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700'
+									}">
+									<div class="flex items-center h-5 mt-0.5">
+										<input
+											type="checkbox"
+											bind:checked={task.isCompleted}
+											on:change={() => {
+												console.log(`Task ${task.name} toggled to:`, task.isCompleted);
+												focusTasksCompleted = focusTasks.filter(t => t.isCompleted).length;
+											}}
+											class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500 focus:ring-2 dark:bg-slate-700 dark:border-slate-600 transition-colors"
+										/>
+									</div>
+									<div class="flex-1 min-w-0">
+										<div class="flex items-center gap-2 mb-0.5">
+											<span class="text-lg group-hover:scale-110 transition-transform duration-200">{task.icon}</span>
+											<span class="font-semibold text-sm text-slate-900 dark:text-slate-100 truncate">
 												{task.name}
-											</div>
-											<div class="text-xs text-gray-500 dark:text-gray-400">
-												{task.description}
-											</div>
+											</span>
 										</div>
+										<p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+											{task.description}
+										</p>
 									</div>
 								</label>
 							{/each}
@@ -427,38 +432,41 @@
 
 					<!-- 备注 -->
 					<div>
-						<label for="notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							备注
+						<label for="notes" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+							Notes
 						</label>
 						<textarea
 							id="notes"
 							bind:value={notes}
-							placeholder="记录今天的心情、想法或其他信息..."
+							placeholder="Any thoughts, feelings, or extra details..."
 							rows="2"
-							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none dark:bg-gray-800 dark:text-white placeholder-gray-400"
+							class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none dark:text-white placeholder-slate-400 transition-all"
 						></textarea>
 					</div>
 
 					<!-- 错误信息 -->
 					{#if errorMessage}
-						<div class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-							<p class="text-sm text-red-700 dark:text-red-400">{errorMessage}</p>
+						<div class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2">
+							<svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+							<p class="text-sm text-red-600 dark:text-red-400">{errorMessage}</p>
 						</div>
 					{/if}
 				</form>
 			</div>
 			
 			<!-- 操作按钮 - 固定在底部 -->
-			<div class="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 p-6">
+			<div class="flex-shrink-0 border-t border-slate-100 dark:border-slate-800 p-6 bg-slate-50/50 dark:bg-slate-900/50">
 				<div class="flex gap-3">
 					{#if existingCheckin}
 						<button
 							type="button"
 							on:click={handleDelete}
 							disabled={isLoading}
-							class="px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
+							class="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
 						>
-							删除记录
+							Delete
 						</button>
 					{/if}
 					
@@ -468,16 +476,16 @@
 						type="button"
 						on:click={closeModal}
 						disabled={isLoading}
-						class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors disabled:opacity-50"
+						class="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors disabled:opacity-50"
 					>
-						取消
+						Cancel
 					</button>
 					
 					<button
 						type="submit"
 						form="checkin-form"
 						disabled={isLoading || !workPlan.trim()}
-						class="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+						class="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white text-sm font-medium rounded-lg shadow-lg shadow-blue-500/20 transition-all hover:shadow-blue-500/30 disabled:shadow-none disabled:opacity-50 flex items-center gap-2"
 					>
 						{#if isLoading}
 							<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -485,7 +493,7 @@
 								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 							</svg>
 						{/if}
-						{existingCheckin ? '更新' : '保存'}
+						{existingCheckin ? 'Update' : 'Save'}
 					</button>
 				</div>
 			</div>
