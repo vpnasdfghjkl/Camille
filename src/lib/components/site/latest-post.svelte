@@ -7,7 +7,7 @@
 		posts: Post[];
 	};
 
-	let post = data.posts[0];
+	let post = data.posts?.[0];
 </script>
 
 <div class="relative w-full py-10">
@@ -47,7 +47,11 @@
 				<!-- Card decoration -->
 				<div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
 				<div class="relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-900/5">
-					<Blogcard {post} shallow={true} />
+					{#if post}
+						<Blogcard {post} shallow={true} />
+					{:else}
+						<div class="p-6 text-sm text-muted-foreground">No posts yet.</div>
+					{/if}
 				</div>
 			</div>
 		</div>

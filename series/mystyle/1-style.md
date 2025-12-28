@@ -109,3 +109,21 @@ if __name__ == "__main__":
 
 ## 运行和调试
 1. 多进程调试突然出现跳步，是由于其他进程比如dataloader开启了多线程load数据
+
+## MACOS状态栏间隔调整
+```bash
+# 1. 缩减图标间距（数值越小越挤，默认通常是 16，建议设为 4 或 6）
+defaults -currentHost write -globalDomain NSStatusItemSpacing -int 6
+
+# 2. 缩减图标两边的内边距
+defaults -currentHost write -globalDomain NSStatusItemSelectionPadding -int 6
+
+# 3. 重启状态栏（会导致状态栏短暂消失后重现）
+killall ControlCenter
+```
+### ice
+常态显示图标/隐藏图标
+```bash
+# 安装ice
+brew install --cask jordanbaird-ice
+```

@@ -38,6 +38,14 @@
 	// 焦点任务配置
 	let focusTasksConfig: FocusTaskConfig[] = [];
 
+	// 获取本地时间字符串 (YYYY-MM-DD)
+	function getLocalDateStr(date: Date): string {
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const day = String(date.getDate()).padStart(2, '0');
+		return `${year}-${month}-${day}`;
+	}
+
 	onMount(async () => {
 		focusTasksConfig = await loadFocusTasksConfig();
 		console.log('✅ 加载焦点任务配置:', focusTasksConfig);
@@ -96,8 +104,8 @@
 				percentage: [40, 30, 20, 10, 5, 5][index] || 5
 			})),
 			dateRange: {
-				start: new Date(Date.now() - 364 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-				end: new Date().toISOString().split('T')[0]
+				start: getLocalDateStr(new Date(Date.now() - 364 * 24 * 60 * 60 * 1000)),
+				end: getLocalDateStr(new Date())
 			}
 		};
 		processCalendarData();
@@ -107,6 +115,7 @@
 	function generateMockContributionData(): ContributionDay[] {
 		const contributions: ContributionDay[] = [];
 		const today = new Date();
+		const todayStr = getLocalDateStr(today);
 		const startDate = new Date(today);
 		startDate.setDate(today.getDate() - 364);
 
@@ -117,14 +126,14 @@
 			const level = Math.random() > 0.3 ? Math.floor(Math.random() * (totalFocusTasks + 1)) : 0;
 			const count = level;
 			const hasCheckin = level > 0;
-			const dateStr = currentDate.toISOString().split('T')[0];
+			const dateStr = getLocalDateStr(currentDate);
 			
 			contributions.push({
 				date: dateStr,
 				level,
 				count,
 				isAllCompleted: level >= totalFocusTasks,
-				isToday: dateStr === today.toISOString().split('T')[0],
+				isToday: dateStr === todayStr,
 				month: currentDate.getMonth(),
 				day: currentDate.getDate(),
 				hasCheckin,
@@ -143,6 +152,11 @@
 		const weeks: ContributionDay[][] = [];
 		let currentWeek: ContributionDay[] = [];
 		
+		// 获取本地时间的"今天" (YYYY-MM-DD)
+		const now = new Date();
+		const todayStr = getLocalDateStr(now);
+		console.log('📅 Local Today:', todayStr);
+		
 		const firstDate = typeof contributions[0]?.date === 'string' 
 			? new Date(contributions[0].date) 
 			: contributions[0]?.date || new Date();
@@ -152,7 +166,7 @@
 			const emptyDate = new Date(firstDate);
 			emptyDate.setDate(firstDate.getDate() - (firstDayOfWeek - i));
 			currentWeek.push({
-				date: emptyDate.toISOString().split('T')[0],
+				date: getLocalDateStr(emptyDate),
 				level: 0,
 				count: 0,
 				hasCheckin: false
@@ -160,9 +174,20 @@
 		}
 
 		contributions.forEach((day) => {
+			// 处理日期字符串，确保正确比较
+			let dateStr: string;
+			if (typeof day.date === 'string') {
+				dateStr = day.date;
+			} else {
+				// 如果是Date对象，转换为本地日期字符串而不是UTC
+				dateStr = getLocalDateStr(day.date);
+			}
+			
 			const dayData: ContributionDay = {
 				...day,
-				date: typeof day.date === 'string' ? day.date : day.date.toISOString().split('T')[0]
+				date: dateStr,
+				// 强制使用本地时间重新计算 isToday，确保时区正确
+				isToday: dateStr === todayStr
 			};
 			currentWeek.push(dayData);
 			if (currentWeek.length === 7) {
@@ -171,11 +196,49 @@
 			}
 		});
 
+		// 检查是否包含今天，如果不包含则补全
+		const lastContributedDate = contributions.length > 0 
+			? (typeof contributions[contributions.length - 1].date === 'string' 
+				? contributions[contributions.length - 1].date 
+				: getLocalDateStr(contributions[contributions.length - 1].date as Date))
+			: '';
+
+		// 如果最后一个日期小于今天，我们需要填充直到今天
+		if (lastContributedDate && lastContributedDate < todayStr) {
+			// 计算相差天数
+			const lastDateObj = new Date(lastContributedDate);
+			const todayObj = new Date(todayStr);
+			const diffTime = Math.abs(todayObj.getTime() - lastDateObj.getTime());
+			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+			
+			for(let i = 1; i <= diffDays; i++) {
+				const nextDate = new Date(lastDateObj);
+				nextDate.setDate(lastDateObj.getDate() + i);
+				const nextDateStr = getLocalDateStr(nextDate);
+				
+				const missingDay: ContributionDay = {
+					date: nextDateStr,
+					level: 0,
+					count: 0,
+					hasCheckin: false,
+					isToday: nextDateStr === todayStr,
+					month: nextDate.getMonth(),
+					day: nextDate.getDate()
+				};
+				
+				currentWeek.push(missingDay);
+				if (currentWeek.length === 7) {
+					weeks.push([...currentWeek]);
+					currentWeek = [];
+				}
+			}
+		}
+
 		while (currentWeek.length > 0 && currentWeek.length < 7) {
 			const lastDate = new Date(currentWeek[currentWeek.length - 1].date);
 			lastDate.setDate(lastDate.getDate() + 1);
 			currentWeek.push({
-				date: lastDate.toISOString().split('T')[0],
+				date: getLocalDateStr(lastDate),
 				level: 0,
 				count: 0,
 				hasCheckin: false
@@ -421,9 +484,9 @@
 										<div class="relative group h-[14px] w-[12px]">
 											<button 
 												class="block w-3 h-3 {getContributionClass(day.level, day.isAllCompleted)} 
-													   rounded-[3px] transition-all duration-200 
-													   hover:ring-2 hover:ring-blue-400/50 hover:scale-125 hover:z-10 cursor-pointer
-													   {day.isToday ? 'ring-1 ring-slate-900 dark:ring-white' : ''}"
+													   rounded-[3px] transition-all duration-200 relative
+													   hover:ring-2 hover:ring-blue-400/50 hover:scale-125 hover:z-20 cursor-pointer
+													   {day.isToday ? 'ring-2 ring-offset-2 ring-offset-white dark:ring-offset-slate-950 ring-orange-500 dark:ring-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.6)] z-20 scale-110' : ''}"
 												on:click={() => handleDayClick(day)}
 												aria-label="{day.date}: {day.count} tasks"
 											>

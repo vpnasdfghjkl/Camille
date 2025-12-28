@@ -69,174 +69,172 @@ Host mac2server2ubuntu_harbin
   # ProxyJump root@120.55.169.67:SSH_PORT
 ```
 
-## 服务器自启动配置过程(局域网server：A(用户是tongyuan2)， 公网server：B(camille0811.com)， 其他机器： C)
-好的，完全没问题。我们一步一步来，就像之前配置第一个用户那样，为 `tongyuan2` 用户建立一个稳定独立的 SSH 反向隧道。
+## ssh 反向代理(autossh + systemd, 有风险, 易被黑)
+`A(mac/daily) ---> B(camille0811.com) ---> C(GPU server / Target server)`
 
-这个过程将确保 `tongyuan2` 的隧道在**服务器 B 的 `2252` 端口**上监听，并且完全独立于 `tongyuan1` 的隧道。
+``note``: before below code, need setup ssh key between A to B, B to C
 
----
-
-### 准备工作：确认用户存在
-
-首先，请确保内网**服务器 A** 上已经有 `tongyuan2` 这个用户。如果没有，请创建它：
-
-```bash
-# 在服务器 A 上执行
-sudo useradd -m -s /bin/bash tongyuan2
-# (可选)为该用户设置一个密码，以便他自己能登录服务器A
-# sudo passwd tongyuan2
+```sh
+# 设置从C到B的免密ssh登陆
+ssh-keygen -t rsa -b 4096 -C "1362150003@qq.com"
+ssh-copy-id -p 2222 root@camille0811.com
 ```
 
----
 
-### 第一步：在【服务器 A (内-网)】上为 `tongyuan2` 配置免密登录到服务器 B
+```sh
+# 在B服务器上创建systemd服务文件
+sudo nano /etc/systemd/system/autossh-reverse-tunnel.service
+```
 
-这一步是让 `tongyuan2` 账户能够自动、无需密码地连接到**服务器 B**。这是 `autossh` 自动重连的基础。
+```sh
+# /etc/systemd/system/autossh-reverse-tunnel.service
+[Unit]
+Description=AutoSSH Reverse Tunnel between mac and GPU server by camille0811.com
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=TARGET_USER_NAME_ON_GPU_SERVER  # replace with the user name on GPU server
+# map port 2280 on camille0811.com to port 22 on GPU server, 2222 is the ssh port of camille0811.com, if GPU server ssh port is not 22, change localhost:YOUR_SSH_PORT accordingly
+ExecStart=/usr/bin/autossh -M 0 -o "ServerAliveInterval=30" -o "ServerAliveCountMax=3" -o "ExitOnForwardFailure=yes" -NR 2280:localhost:22 -p 2222 root@camille0811.com
+Restart=always
+RestartSec=15
+[Install]
+WantedBy=multi-user.target
+```
 
-1.  **切换到 `tongyuan2` 用户**：
-    为了保证所有密钥和配置都属于 `tongyuan2`，我们直接以他的身份操作。
-    ```bash
-    # 在服务器 A 上执行
-    sudo su - tongyuan2
-    ```
-    现在你的命令行提示符应该变成了 `tongyuan2@...`。
+## 同一台机器多个用户分别设置反向代理是脱裤子放屁
+[开路与用路:chat with gemini](https://gemini.google.com/share/7ed38c5d2702)
 
-2.  **生成 SSH 密钥**（如果 `tongyuan2` 还没有的话）：
-    ```bash
-    # 作为 tongyuan2 用户执行
-    ssh-keygen -t ed25519
-    ```
-    一路按回车，使用默认设置，不要设置密码。这会在 `/home/tongyuan2/.ssh/id_ed25519.pub` 生成公钥。
 
-3.  **将 `tongyuan2` 的公钥复制到服务器 B**：
-    ```bash
-    # 仍然作为 tongyuan2 用户执行
-    # 注意：这里我们使用 root@camille0811.com，因为隧道的另一端是由B服务器的root进程管理的
-    ssh-copy-id root@camille0811.com
-    ```
-    系统会提示你输入 `root@camille0811.com` 的密码。**输入一次密码**后，免密登录就为 `tongyuan2` 设置好了。
+## FRP + STCP 极速安全访问 / REVERSE PROXY 
+这是针对 H100 高算力设备构建的 **FRP + STCP 极速安全访问方案**。该方案通过隐藏公网端口并结合 SSH 密钥，彻底杜绝了导致你之前 CPU 被占满的暴力破解风险。
 
-4.  **验证免密登录**：
-    试一下是否能直接登录，如果不需要输密码就成功了。
-    ```bash
-    # 仍然作为 tongyuan2 用户执行
-    ssh root@camille0811.com
-    # 登录成功后输入 exit 退出，回到服务器 A
-    exit
-    ```
+**1. 核心配置参数 (三端必须统一)**
 
-5.  **返回 root 或你的管理员账户**：
-    完成 `tongyuan2` 的配置后，可以退回到你原来的账户了。
-    ```bash
-    exit
-    ```
+为了让整套方案顺利工作，你需要在 **公网VPS**、**H100服务器** 和 **本地访问电脑** 这三端的配置文件中设置一些参数。请确保在所有文件中，对应的参数值都是完全一样的。在下面的配置示例中，你需要将 `your_vps_ip`、`your_auth_token` 和 `your_secret_key` 等示例值替换为你自己设定的值。
 
----
+**2. 节点配置规范**
 
-### 第二步：在【服务器 A (内网)】上为 `tongyuan2` 创建 `systemd` 隧道服务
+### ---
 
-现在我们创建一个新的 `systemd` 服务文件，专门用于管理 `tongyuan2` 的隧道。文件名要和之前的区分开。
+**A. 公网 VPS (服务端 - frps)**
 
-1.  **创建新的服务文件**：
-    ```bash
-    # 在服务器 A 上以 root/sudo 权限执行
-    sudo nano /etc/systemd/system/reverse-tunnel-tongyuan2.service
-    ```
+**文件：frps.toml**
 
-2.  **粘贴服务配置内容**：
-    将以下内容完整复制并粘贴到文件中。注意 `User`、`Description` 和端口号 `2252` 都是为 `tongyuan2` 量身定制的。
+```toml
+bindPort = 7000
 
-    ```ini
-    [Unit]
-    # 描述清晰地指明是为 tongyuan2 服务的
-    Description=AutoSSH Reverse Tunnel for tongyuan2 to port 2252
-    Wants=network-online.target
-    After=network-online.target
+auth.method = "token"
+# 请替换为你的自定义认证令牌，例如 "your_secure_token_here"
+auth.token = "your_auth_token"
+```
 
-    [Service]
-    # 重要：使用 tongyuan2 用户来运行这个服务
-    User=tongyuan2
-  
-    # 核心命令，映射端口 2252
-    ExecStart=/usr/bin/autossh -M 0 -o "ServerAliveInterval=30" -o "ServerAliveCountMax=3" -o "ExitOnForwardFailure=yes" -NR 2252:localhost:22 root@camille0811.com
-  
-    Restart=always
-    RestartSec=15
+**运行命令：**
 
-    [Install]
-    WantedBy=multi-user.target
-    ```
+```bash
+./frps -c frps.toml
+```
 
-3.  **保存并关闭文件** (`Ctrl+X`, `Y`, `Enter`)。
+### ---
 
----
+**B. H100 服务器 (被控端 - frpc)**
 
-### 第三步：在【服务器 B (公网)】上为新端口配置防火墙
+**文件：frpc.toml**
 
-`tongyuan1` 的 `2250` 端口应该已经打开了，现在我们还需要为 `tongyuan2` 打开 `2252` 端口。
+```toml
+# 请替换为你的公网VPS的IP地址
+serverAddr = "your_vps_ip"
+serverPort = 7000
 
-1.  **登录到服务器 B**：
-    ```bash
-    ssh root@camille0811.com
-    ```
+auth.method = "token"
+# 这里的令牌必须与服务端 frps.toml 中设置的完全一致
+auth.token = "your_auth_token"
 
-2.  **开放 `2252` 端口**：
-    ```bash
-    # 假设你使用 ufw
-    sudo ufw allow 2252/tcp
-    sudo ufw reload
+[[proxies]]
+name = "h100_secret_ssh"
+type = "stcp"
+# 请替换为你的自定义STCP隧道加密密钥
+secretKey = "your_secret_key"
+localIP = "127.0.0.1"
+localPort = 22
+```
 
-    # 如果是 firewalld (CentOS/RHEL)
-    # sudo firewall-cmd --permanent --add-port=2252/tcp
-    # sudo firewall-cmd --reload
-    ```
-    > **提示**: `GatewayPorts yes` 这个配置是全局的，之前为 `tongyuan1` 设置过一次后，对 `tongyuan2` 的隧道同样生效，无需重复配置。
+**运行命令：**
 
----
+```bash
+./frpc -c frpc.toml
+```
 
-### 第四步：启动并验证 `tongyuan2` 的隧道服务
+### ---
+**C. 本地 Mac/PC (访问端 - visitor)**
 
-回到**服务器 A**，启动我们刚刚创建的新服务。
+**文件：frpc-visitor.toml**
 
-1.  **重载 `systemd`，启用并启动新服务**：
-    ```bash
-    # 在服务器 A 上执行
-    sudo systemctl daemon-reload
-    sudo systemctl enable reverse-tunnel-tongyuan2.service  # 设置开机自启
-    sudo systemctl start reverse-tunnel-tongyuan2.service   # 立即启动
-    ```
+```toml
+# 请替换为你的公网VPS的IP地址
+serverAddr = "your_vps_ip"
+serverPort = 7000
 
-2.  **检查服务状态**：
-    ```bash
-    sudo systemctl status reverse-tunnel-tongyuan2.service
-    ```
-    你应该能看到 `active (running)` 的绿色状态，并且日志中显示 `autossh` 进程已启动。
+auth.method = "token"
+# 这里的令牌必须与服务端 frps.toml 中设置的完全一致
+auth.token = "your_auth_token"
 
----
+[[visitors]]
+name = "h100_visitor"
+type = "stcp"
+serverName = "h100_secret_ssh"
+# 这里的密钥必须与H100服务器 frpc.toml 中设置的完全一致
+secretKey = "your_secret_key"
+bindAddr = "127.0.0.1"
+bindPort = 6000
+```
 
-### 第五步：在【设备 C (你的PC)】上测试连接
+**运行命令：**
 
-一切就绪！现在，从你的个人电脑上测试连接到服务器 A 的 `tongyuan2` 账户。
+```bash
+./frpc -c frpc-visitor.toml
+```
 
-1.  **执行 SSH 命令**：
-    ```bash
-    ssh -p 2252 tongyuan2@camille0811.com
-    ```
-    *   `-p 2252`: 连接的是**服务器 B** 上的 `2252` 端口。
-    *   `tongyuan2`: 用户名是**服务器 A** 上的 `tongyuan2`。
-    *   `camille0811.com`: 地址是**服务器 B** 的地址。
+### ---
 
-2.  **（推荐）更新 `~/.ssh/config` 文件**：
-    在你 PC 的 `~/.ssh/config` 文件中追加 `tongyuan2` 的配置：
-    ```
-    Host company-t2
-        HostName camille0811.com
-        User tongyuan2
-        Port 2252
-    ```
-    现在你可以用 `ssh company-t2` 来快速连接了。
+**3\. SSH 安全加固规范 (核心防线)**
 
-至此，你已经成功地为 `tongyuan2` 用户手动配置了一套完全独立且稳定的反向隧道。两个用户的隧道互不干扰，各自有自己的服务进程和端口。
+在 H100 成功接入后，必须修改系统 SSH 配置以免疫一切暴力破解。
+
+1. 生成 Ed25519 密钥（Mac 端执行）：  
+   ssh-keygen \-t ed25519 \-f \~/.ssh/id\_h100\_ed25519  
+2. 推送公钥：  
+   ssh-copy-id \-i \~/.ssh/id\_h100\_ed25519.pub \-p 6000 user@127.0.0.1  
+3. **修改 H100 /etc/ssh/sshd\_config**：  
+   * PasswordAuthentication no (禁用密码)  
+   * PubkeyAuthentication yes (启用密钥)  
+   * PermitRootLogin prohibit-password (禁止 Root 密码登录)  
+4. 连接指令：  
+   ssh \-p 6000 \-i \~/.ssh/id\_h100\_ed25519 your_username@127.0.0.1
+
+### ---
+
+**4\. 排错要点总结 (快速核对)**
+
+| 现象 | 原因 | 对策 |
+| :---- | :---- | :---- |
+| nc \-vz 失败 | 云防火墙未开 | 在控制台放行 TCP 7000 |
+| token doesn't match | `your_auth_token` 不一致 | 检查特殊字符转义或重启 frps |
+| session shutdown | 版本/时间不一致 | 统一 frp 版本；同步系统时间 |
+| killed (Mac) | 架构不对或 Gatekeeper | 确认下载 arm64 版；运行 xattr \-d |
+
+### ---
+
+**5\. 长期稳定运行建议**
+
+既然不建议使用后台指令，推荐使用 **screen** 或 **tmux**。
+
+* **优点**：进程在后台不中断，但你随时可以“切回”前台查看实时日志。  
+* **命令**：  
+  * 新建：screen \-S frp \-\> 运行 ./frp... \-\> 按 Ctrl+A, D 挂起。  
+  * 查看：screen \-r frp 即可回到实时日志界面。
+
+你需要我为你提供一份自动化安装 frp 并配置为 systemd 服务的脚本吗？（虽然它在后台，但你可以通过 journalctl \-f 随时滚动查看实时错误日志）。
 
 
 ## GPU
