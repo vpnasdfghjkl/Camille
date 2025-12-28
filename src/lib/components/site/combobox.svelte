@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tagToSlug } from '$lib/posts';
+	import { tagToSlug } from '$lib/utils';
 	import { Check, ChevronsUpDown, Tag } from 'lucide-svelte';
 	import * as Command from '$lib/components/ui/command';
 	import * as Popover from '$lib/components/ui/popover';

@@ -1,4 +1,5 @@
-import { groupPostsByTag, tagToSlug } from '$lib/posts';
+import { groupPostsByTag } from '$lib/posts';
+import { tagToSlug } from '$lib/utils';
 
 export const load = async ({ params }) => {
 	const slug = tagToSlug(params.tag);

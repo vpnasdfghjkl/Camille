@@ -1,5 +1,5 @@
 import { dev } from '$app/environment';
-import { localToGithubURL } from '$lib/utils';
+import { localToGithubURL, tagToSlug } from '$lib/utils';
 import type { Post, Series, SeriesPost } from '$lib/types';
 
 export const getPosts = async () => {
@@ -139,10 +139,6 @@ export const getSeriesPosts = async () => {
 export const getSeriesPostByCoverFolder = async (coverFolder: string) => {
 	const seriesPosts = await getSeriesPosts();
 	return seriesPosts.find((seriesPost) => seriesPost.coverFolder === coverFolder);
-};
-
-export const tagToSlug = (tag: string) => {
-	return tag.replace(/ /g, '-').toLowerCase();
 };
 
 // spagetti code, but it works :D

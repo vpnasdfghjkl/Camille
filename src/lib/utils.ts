@@ -65,3 +65,7 @@ export function formatDate(date: string, dateStyle: DateStyle = 'medium', locale
 export const localToGithubURL = ({ src }: { src: string }) => {
 	return `https://raw.githubusercontent.com/${githubConfig.username}/${githubConfig.repo}/${githubConfig.branch}${src}`;
 };
+
+export const tagToSlug = (tag: string) => {
+	return tag.replace(/ /g, '-').toLowerCase();
+};

@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { tagToSlug } from '$lib/posts';
 	import type { Post, Series } from '$lib/types';
-	import { cn, formatDate } from '$lib/utils';
+	import { cn, formatDate, tagToSlug } from '$lib/utils';
 	import { Calendar } from 'lucide-svelte';
 	import Tag from './tag.svelte';
 

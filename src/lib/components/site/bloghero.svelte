@@ -5,7 +5,7 @@
 	import SeriesBlogAccordian from './series-blog-accordian.svelte';
 	import Tag from './tag.svelte';
 	import Author from './author.svelte';
-	import { tagToSlug } from '$lib/posts';
+	import { tagToSlug } from '$lib/utils';
 
 	export let data: PageData;
 	$: ({ meta } = data);

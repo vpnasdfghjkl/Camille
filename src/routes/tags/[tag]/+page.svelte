@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Blogcard, ComboBox, Masonry, Tag } from '$lib/components/site';
-	import { tagToSlug } from '$lib/posts';
+	import { tagToSlug } from '$lib/utils';
 	import { formatDate } from '$lib/utils';
 
 	import type { PageData } from './$types';

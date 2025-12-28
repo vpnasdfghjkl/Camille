@@ -106,6 +106,7 @@
 				title="Activity Log"
 				showFocusAreas={true}
 				useRealData={true}
+				privacyMode={true}
 				on:dayClick={handleDayClick}
 				on:dataUpdate={handleDataUpdate}
 			/>
