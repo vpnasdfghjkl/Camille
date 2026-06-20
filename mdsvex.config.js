@@ -9,7 +9,6 @@ import { visit } from 'unist-util-visit';
 import { toHtml } from 'hast-util-to-html';
 import rehypePrettyCode from 'rehype-pretty-code';
 import { BUNDLED_LANGUAGES, getHighlighter } from 'shiki-es';
-import { escapeSvelte } from '@huntabyte/mdsvex';
 import remarkUnwrapImages from 'remark-unwrap-images';
 import rehypeSlug from 'rehype-slug';
 import math from 'remark-math';
@@ -45,7 +44,7 @@ const katex_blocks = () => (tree) => {
 			});
 
 			node.type = 'raw';
-			node.value = '<span class="text-sm md:text-lg">{@html `' + str + '`}</span>';
+			node.value = '<span class="text-sm md:text-lg">{@html ' + JSON.stringify(str) + '}</span>';
 		}
 	});
 };
@@ -69,7 +68,7 @@ const inlineKatexUsingInlineCode = () => (tree) => {
 			});
 
 			node.type = 'raw';
-			node.value = '<span class="text-base mx-1">{@html `' + str + '`}</span>';
+			node.value = '<span class="text-base mx-1">{@html ' + JSON.stringify(str) + '}</span>';
 		} 
 	})
 }
@@ -95,12 +94,8 @@ const katex_inline = () => (tree) => {
         macros: { '\\f': '#1f(#2)' }
       });
 
-      // Escape the HTML for Svelte
-		const escapedHTML = escapeSvelte(str);
-
-
       // Wrap the rendered equation in a span
-      return `<span class="text-base">{@html \`${escapedHTML}\`}</span>`;
+      return `<span class="text-base">{@html ${JSON.stringify(str)}}</span>`;
     });
 
     // Replace the original text node with the modified text
@@ -204,13 +199,18 @@ function rehypeCustomComponents() {
 			'Components.h6'
 		];
 
-		visit(tree, (node) => {
-			// Check h tags, and pass some extra parameters to the custom components.
-			if (node?.type === 'element' && hTags.includes(node?.tagName)) {
-				node.properties['id'] = node.children[0].value.split(' ').join('-').toLowerCase();
-				node.properties['headerTag'] = node.tagName.split('.')[1];
-			}
-		});
+			visit(tree, (node) => {
+				// Check h tags, and pass some extra parameters to the custom components.
+				if (node?.type === 'element' && hTags.includes(node?.tagName)) {
+					node.properties['id'] = node.children[0].value
+						.replace(/["'`{}<>]/g, '')
+						.trim()
+						.split(/\s+/)
+						.join('-')
+						.toLowerCase();
+					node.properties['headerTag'] = node.tagName.split('.')[1];
+				}
+			});
 	};
 }
 
@@ -318,7 +318,7 @@ function rehypeRenderCode() {
 				);
 
 				codeEl.type = 'raw';
-				codeEl.value = `{@html \`${escapeSvelte(codeString)}\`}`;
+				codeEl.value = `{@html ${JSON.stringify(codeString)}}`;
 			}
 		});
 	};

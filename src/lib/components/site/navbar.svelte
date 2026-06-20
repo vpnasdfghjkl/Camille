@@ -5,20 +5,24 @@
 	import { ThemeToggle } from '$lib/components/site';
 	import { Terminal, Sparkles, Hash, Cpu, FlaskConical, User } from 'lucide-svelte';
 
-	let openToWork = true;
-	
 	// 映射路由到图标和颜色
 	function getIconConfig(name: string) {
-		switch(name.toLowerCase()) {
-			case 'blog': return { icon: Sparkles, color: 'text-blue-500' };     // Google Blue
-			case 'tags': return { icon: Hash, color: 'text-red-500' };          // Google Red
-			case 'projects': return { icon: Cpu, color: 'text-amber-500' };     // Google Yellow (Amber for visibility)
-			case 'lab': return { icon: FlaskConical, color: 'text-green-500' }; // Google Green
-			case 'about': return { icon: User, color: 'text-sky-500' };         // Light Blue
-			default: return { icon: Terminal, color: 'text-primary' };
+		switch (name.toLowerCase()) {
+			case 'blog':
+				return { icon: Sparkles, color: 'text-slate-500 dark:text-slate-400' };
+			case 'tags':
+				return { icon: Hash, color: 'text-zinc-500 dark:text-zinc-400' };
+			case 'projects':
+				return { icon: Cpu, color: 'text-stone-500 dark:text-stone-400' };
+			case 'lab':
+				return { icon: FlaskConical, color: 'text-neutral-500 dark:text-neutral-400' };
+			case 'about':
+				return { icon: User, color: 'text-slate-500 dark:text-slate-400' };
+			default:
+				return { icon: Terminal, color: 'text-primary' };
 		}
 	}
-	
+
 	// 背景图片配置参数 (暂时注释)
 	/*
 	const backgroundConfig = {
@@ -37,9 +41,7 @@
 	*/
 </script>
 
-<nav
-	class="fixed top-0 left-0 right-0 z-[100] w-full border-b border-transparent bg-transparent backdrop-blur-[1px] hidden md:block transition-all duration-300"
->
+<nav class="fixed top-0 left-0 right-0 z-[100] w-full hidden md:block transition-all duration-300">
 	<!-- 背景图片 (暂时注释) -->
 	<!--
 	<div 
@@ -50,32 +52,23 @@
 	></div>
 	-->
 
-	<div class="flex items-center justify-between h-16 px-6 max-w-7xl mx-auto relative z-10 drop-shadow-md">
+	<div class="flex items-center justify-between h-16 px-6 max-w-7xl mx-auto relative z-10">
 		<!-- Logo & Status Area -->
 		<div class="flex items-center gap-6">
 			<!-- Tech Logo -->
 			<a
 				href="/"
-				class="group flex items-center gap-2 font-mono text-lg font-bold tracking-tight hover:opacity-80 transition-opacity"
+				class="group flex items-center gap-2 rounded-xl px-2.5 py-1.5 font-mono text-lg font-bold tracking-tight bg-white/25 dark:bg-slate-950/25 backdrop-blur-xl shadow-sm shadow-slate-900/5 hover:bg-white/40 dark:hover:bg-slate-900/40 transition-colors"
 			>
-				<div class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+				<div
+					class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/35 text-slate-600 dark:bg-white/10 dark:text-slate-300 group-hover:bg-white/55 dark:group-hover:bg-white/15 transition-colors"
+				>
 					<Terminal size={18} />
 				</div>
 				<span class="text-foreground">
-					<span class="text-primary">~/</span>camille
+					<span class="text-muted-foreground">~/</span>camille
 				</span>
 			</a>
-
-			<!-- Status Badge -->
-			{#if openToWork}
-				<div class="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-xs font-medium text-green-600 dark:text-green-400">
-					<span class="relative flex h-2 w-2">
-						<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-						<span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-					</span>
-					<span>Open to work</span>
-				</div>
-			{/if}
 		</div>
 
 		<!-- Navigation & Actions -->
@@ -88,19 +81,25 @@
 						<a
 							href={route.link}
 							class={cn(
-								"relative flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group hover:bg-accent/50",
-								isActive ? "bg-accent/50 text-foreground" : "text-muted-foreground"
+								'relative flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group backdrop-blur-xl shadow-sm shadow-slate-900/5',
+								isActive
+									? 'bg-white/40 dark:bg-slate-900/40 text-foreground'
+									: 'bg-white/20 dark:bg-slate-950/20 text-muted-foreground hover:bg-white/35 dark:hover:bg-slate-900/35 hover:text-foreground'
 							)}
 						>
-							<span class={cn(
-								"mr-2 transition-all duration-200",
-								config.color,
-								isActive ? "scale-110" : "opacity-70 group-hover:opacity-100 group-hover:scale-110"
-							)}>
+							<span
+								class={cn(
+									'mr-2 transition-all duration-200',
+									config.color,
+									isActive
+										? 'scale-110'
+										: 'opacity-70 group-hover:opacity-100 group-hover:scale-110'
+								)}
+							>
 								<svelte:component this={config.icon} size={18} />
 							</span>
-							
-							<span class={cn("transition-colors", isActive ? "font-semibold" : "")}>
+
+							<span class={cn('transition-colors', isActive ? 'font-semibold' : '')}>
 								{route.name}
 							</span>
 						</a>
@@ -108,7 +107,7 @@
 				{/each}
 			</ul>
 
-			<div class="pl-6 border-l border-border/50">
+			<div class="pl-4">
 				<ThemeToggle />
 			</div>
 		</div>

@@ -27,7 +27,7 @@
 	let monthLabels: MonthLabel[] = [];
 	let isLoading = true;
 	let error = '';
-	
+
 	// 认证模态框状态
 	let showAuthModal = false;
 	let authPassword = '';
@@ -46,10 +46,10 @@
 	// 焦点任务配置
 	let focusTasksConfig: FocusTaskConfig[] = [];
 
-    // Focus action
-    function focus(element: HTMLElement) {
-        element.focus();
-    }
+	// Focus action
+	function focus(element: HTMLElement) {
+		element.focus();
+	}
 
 	// 获取本地时间字符串 (YYYY-MM-DD)
 	function getLocalDateStr(date: Date): string {
@@ -62,7 +62,7 @@
 	onMount(async () => {
 		focusTasksConfig = await loadFocusTasksConfig();
 		console.log('✅ 加载焦点任务配置:', focusTasksConfig);
-		
+
 		if (useRealData) {
 			await loadRealData();
 		} else {
@@ -78,7 +78,7 @@
 			const apiUrl = `/api/stats?days=365${refreshParam}`;
 			const response = await fetch(apiUrl);
 			const result = await response.json();
-			
+
 			if (result.success) {
 				calendarState = result.data;
 				processCalendarData();
@@ -140,7 +140,7 @@
 			const count = level;
 			const hasCheckin = level > 0;
 			const dateStr = getLocalDateStr(currentDate);
-			
+
 			contributions.push({
 				date: dateStr,
 				level,
@@ -164,17 +164,18 @@
 		const contributions = calendarState.contributions;
 		const weeks: ContributionDay[][] = [];
 		let currentWeek: ContributionDay[] = [];
-		
+
 		// 获取本地时间的"今天" (YYYY-MM-DD)
 		const now = new Date();
 		const todayStr = getLocalDateStr(now);
 		console.log('📅 Local Today:', todayStr);
-		
-		const firstDate = typeof contributions[0]?.date === 'string' 
-			? new Date(contributions[0].date) 
-			: contributions[0]?.date || new Date();
+
+		const firstDate =
+			typeof contributions[0]?.date === 'string'
+				? new Date(contributions[0].date)
+				: contributions[0]?.date || new Date();
 		const firstDayOfWeek = firstDate.getDay();
-		
+
 		for (let i = 0; i < firstDayOfWeek; i++) {
 			const emptyDate = new Date(firstDate);
 			emptyDate.setDate(firstDate.getDate() - (firstDayOfWeek - i));
@@ -195,7 +196,7 @@
 				// 如果是Date对象，转换为本地日期字符串而不是UTC
 				dateStr = getLocalDateStr(day.date);
 			}
-			
+
 			const dayData: ContributionDay = {
 				...day,
 				date: dateStr,
@@ -210,11 +211,12 @@
 		});
 
 		// 检查是否包含今天，如果不包含则补全
-		const lastContributedDate = contributions.length > 0 
-			? (typeof contributions[contributions.length - 1].date === 'string' 
-				? contributions[contributions.length - 1].date 
-				: getLocalDateStr(contributions[contributions.length - 1].date as Date))
-			: '';
+		const lastContributedDate =
+			contributions.length > 0
+				? typeof contributions[contributions.length - 1].date === 'string'
+					? contributions[contributions.length - 1].date
+					: getLocalDateStr(contributions[contributions.length - 1].date as Date)
+				: '';
 
 		// 如果最后一个日期小于今天，我们需要填充直到今天
 		if (lastContributedDate && lastContributedDate < todayStr) {
@@ -222,13 +224,13 @@
 			const lastDateObj = new Date(lastContributedDate);
 			const todayObj = new Date(todayStr);
 			const diffTime = Math.abs(todayObj.getTime() - lastDateObj.getTime());
-			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-			
-			for(let i = 1; i <= diffDays; i++) {
+			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+			for (let i = 1; i <= diffDays; i++) {
 				const nextDate = new Date(lastDateObj);
 				nextDate.setDate(lastDateObj.getDate() + i);
 				const nextDateStr = getLocalDateStr(nextDate);
-				
+
 				const missingDay: ContributionDay = {
 					date: nextDateStr,
 					level: 0,
@@ -238,7 +240,7 @@
 					month: nextDate.getMonth(),
 					day: nextDate.getDate()
 				};
-				
+
 				currentWeek.push(missingDay);
 				if (currentWeek.length === 7) {
 					weeks.push([...currentWeek]);
@@ -268,10 +270,23 @@
 
 	function generateMonthLabels(): MonthLabel[] {
 		const labels: MonthLabel[] = [];
-		const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+		const monthNames = [
+			'Jan',
+			'Feb',
+			'Mar',
+			'Apr',
+			'May',
+			'Jun',
+			'Jul',
+			'Aug',
+			'Sep',
+			'Oct',
+			'Nov',
+			'Dec'
+		];
 		let currentMonth = -1;
 		let lastLabelWeek = -1;
-		
+
 		contributionWeeks.forEach((week, weekIndex) => {
 			const firstDay = week[0];
 			if (firstDay) {
@@ -293,19 +308,25 @@
 
 	function getContributionClass(level: number, isAllCompleted?: boolean): string {
 		if (isAllCompleted) {
-			return 'bg-cyan-500 dark:bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)] ring-1 ring-cyan-300/50';
+			return 'bg-stone-600 dark:bg-stone-300 ring-1 ring-stone-300/60 dark:ring-stone-500/60';
 		}
 		const maxLevel = getTotalFocusTasks();
-		switch(level) {
-			case 0: return 'bg-slate-100 dark:bg-slate-900';
-			case 1: return 'bg-blue-400 dark:bg-blue-900';
-			case 2: return 'bg-blue-500 dark:bg-blue-800';
-			case 3: return 'bg-blue-600 dark:bg-blue-700';
-			case 4: return 'bg-blue-700 dark:bg-blue-600';
-			case 5: return 'bg-blue-800 dark:bg-blue-500';
-			default: 
+		switch (level) {
+			case 0:
+				return 'bg-slate-100 dark:bg-slate-900';
+			case 1:
+				return 'bg-slate-300 dark:bg-slate-800';
+			case 2:
+				return 'bg-slate-400 dark:bg-slate-700';
+			case 3:
+				return 'bg-slate-500 dark:bg-slate-600';
+			case 4:
+				return 'bg-slate-600 dark:bg-slate-500';
+			case 5:
+				return 'bg-slate-700 dark:bg-slate-400';
+			default:
 				if (level >= maxLevel) {
-					return 'bg-blue-800 dark:bg-blue-500';
+					return 'bg-slate-700 dark:bg-slate-400';
 				}
 				return 'bg-slate-100 dark:bg-slate-900/80';
 		}
@@ -323,12 +344,12 @@
 
 		const dateStr = typeof day.date === 'string' ? day.date : day.date.toISOString().split('T')[0];
 		selectedDate = dateStr;
-		
+
 		try {
 			const apiUrl = `/api/checkin?date=${dateStr}`;
 			const response = await fetch(apiUrl);
 			const result = await response.json();
-			
+
 			if (result.success && result.data) {
 				selectedCheckin = result.data;
 			} else {
@@ -338,7 +359,7 @@
 			console.error('❌ [前端] 获取打卡数据失败:', error);
 			selectedCheckin = null;
 		}
-		
+
 		showModal = true;
 		dispatch('dayClick', { date: dateStr, checkin: selectedCheckin || undefined });
 	}
@@ -376,7 +397,7 @@
 		} else {
 			const dateStr = checkin.date;
 			const contributions = calendarState?.contributions || [];
-			const existingIndex = contributions.findIndex(c => {
+			const existingIndex = contributions.findIndex((c) => {
 				const cDate = typeof c.date === 'string' ? c.date : c.date.toISOString().split('T')[0];
 				return cDate === dateStr;
 			});
@@ -385,7 +406,7 @@
 				const totalFocusTasks = focusTasksConfig.length || 6;
 				const completedTasks = checkin.focusTasksCompleted || 0;
 				const isAllCompleted = completedTasks >= totalFocusTasks;
-				
+
 				contributions[existingIndex] = {
 					...contributions[existingIndex],
 					level: completedTasks,
@@ -413,7 +434,7 @@
 			await loadRealData();
 		} else {
 			const contributions = calendarState?.contributions || [];
-			const existingIndex = contributions.findIndex(c => {
+			const existingIndex = contributions.findIndex((c) => {
 				const cDate = typeof c.date === 'string' ? c.date : c.date.toISOString().split('T')[0];
 				return cDate === date;
 			});
@@ -442,7 +463,9 @@
 	function getTooltipText(day: ContributionDay): string {
 		const dateStr = typeof day.date === 'string' ? day.date : day.date.toLocaleDateString('zh-CN');
 		if (day.hasCheckin) {
-			return `${dateStr}\n完成 ${day.count} 个Focus任务${day.workPlan ? '\n计划: ' + day.workPlan : ''}`;
+			return `${dateStr}\n完成 ${day.count} 个Focus任务${
+				day.workPlan ? '\n计划: ' + day.workPlan : ''
+			}`;
 		}
 		return `${dateStr}\n点击添加打卡记录`;
 	}
@@ -452,13 +475,14 @@
 </script>
 
 <div class="relative group/graph w-fit">
-	<div class="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl blur opacity-0 group-hover/graph:opacity-100 transition duration-1000"></div>
-	
-	<div class="relative bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
-		
+	<div
+		class="relative bg-white/90 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
+	>
 		<div class="flex items-center justify-between mb-4">
 			<div class="flex items-center gap-3">
-				<div class="p-2 rounded-lg bg-blue-500/10 text-blue-500 ring-1 ring-blue-500/20">
+				<div
+					class="p-2 rounded-lg bg-slate-100 text-slate-500 ring-1 ring-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:ring-slate-800"
+				>
 					<Activity size={15} />
 				</div>
 				<div>
@@ -472,10 +496,15 @@
 			{#if showFocusAreas && focusAreas.length > 0}
 				<div class="hidden md:flex items-center gap-2">
 					{#each focusAreas.slice(0, 6) as area}
-						<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] transition-colors hover:border-blue-500/30">
+						<div
+							class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] transition-colors hover:border-slate-400 dark:hover:border-slate-600"
+						>
 							<span class="font-medium text-slate-700 dark:text-slate-300">{area.name}</span>
 							{#if area.count !== undefined}
-								<span class="text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-slate-700 pl-1.5">{area.count}</span>
+								<span
+									class="text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-slate-700 pl-1.5"
+									>{area.count}</span
+								>
 							{/if}
 						</div>
 					{/each}
@@ -490,7 +519,7 @@
 		{:else if error}
 			<div class="text-center py-8">
 				<p class="text-red-500 text-xs mb-2">{error}</p>
-				<button 
+				<button
 					on:click={() => loadRealData()}
 					class="px-3 py-1 text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded transition-colors"
 				>
@@ -500,16 +529,20 @@
 		{:else}
 			<div class="contribution-graph select-none">
 				<div class="flex-1">
-					<div class="relative flex mb-2 text-[10px] font-medium text-slate-400 dark:text-slate-500 ml-8 h-4">
+					<div
+						class="relative flex mb-2 text-[10px] font-medium text-slate-400 dark:text-slate-500 ml-8 h-4"
+					>
 						{#each monthLabels as label}
 							<span class="absolute" style="left: {label.week * 16}px;">
 								{label.month}
 							</span>
 						{/each}
 					</div>
-					
+
 					<div class="flex">
-						<div class="flex flex-col text-[10px] font-medium text-slate-400 dark:text-slate-600 pr-3 leading-none gap-[4px]">
+						<div
+							class="flex flex-col text-[10px] font-medium text-slate-400 dark:text-slate-600 pr-3 leading-none gap-[4px]"
+						>
 							<div class="h-[14px] min-h-[14px] flex items-center justify-end">Sun</div>
 							<div class="h-[14px] min-h-[14px] flex items-center justify-end">Mon</div>
 							<div class="h-[14px] min-h-[14px] flex items-center justify-end">Tue</div>
@@ -524,52 +557,73 @@
 								<div class="flex flex-col gap-[4px]">
 									{#each week as day}
 										<div class="relative group h-[14px] w-[12px]">
-										<button 
-											class="block w-3 h-3 {getContributionClass(day.level, day.isAllCompleted)} 
-												   rounded-[3px] transition-all duration-200 relative
-												   hover:ring-2 hover:ring-blue-400/50 hover:scale-125 hover:z-20 cursor-pointer
-												   {day.isToday ? 'ring-2 ring-offset-2 ring-offset-white dark:ring-offset-slate-950 ring-orange-500 dark:ring-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.6)] z-20 scale-110' : ''}"
-											on:click={() => handleDayClick(day)}
-											aria-label="{day.date}: {day.count} tasks"
-										>
-										</button>
-											
-											<div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2
-														bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur text-white text-xs p-3 
+											<button
+												class="block w-3 h-3 {getContributionClass(
+													day.level,
+													day.isAllCompleted
+												)} rounded-[3px] transition-all duration-200 relative hover:ring-2 hover:ring-slate-400/50 hover:scale-125 hover:z-20 cursor-pointer
+													   {day.isToday
+													? 'ring-2 ring-offset-2 ring-offset-white dark:ring-offset-slate-950 ring-stone-500 dark:ring-stone-300 z-20 scale-110'
+													: ''}"
+												on:click={() => handleDayClick(day)}
+												aria-label="{day.date}: {day.count} tasks"
+											/>
+
+											<div
+												class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2
+														bg-slate-900/95 dark:bg-slate-950/95 text-white text-xs p-3
 														rounded-lg shadow-xl border border-slate-700/50
-														opacity-0 group-hover:opacity-100 
-														transition-all duration-200 pointer-events-none 
-														whitespace-nowrap z-50 min-w-[140px]">
-												<div class="flex items-center justify-between gap-4 mb-2 border-b border-slate-700/50 pb-2">
-													<span class="text-slate-400 text-[10px] font-mono">{typeof day.date === 'string' ? day.date : day.date.toLocaleDateString()}</span>
+														opacity-0 group-hover:opacity-100
+														transition-all duration-200 pointer-events-none
+														whitespace-nowrap z-50 min-w-[140px]"
+											>
+												<div
+													class="flex items-center justify-between gap-4 mb-2 border-b border-slate-700/50 pb-2"
+												>
+													<span class="text-slate-400 text-[10px] font-mono"
+														>{typeof day.date === 'string'
+															? day.date
+															: day.date.toLocaleDateString()}</span
+													>
 													{#if day.isAllCompleted}
-														<span class="text-[10px] text-cyan-400 flex items-center gap-1 font-medium">
+														<span
+															class="text-[10px] text-stone-300 flex items-center gap-1 font-medium"
+														>
 															<CheckCircle2 size={10} />
 															Complete
 														</span>
 													{/if}
 												</div>
-												
-											<div class="font-medium mb-1 flex items-center gap-2">
-												<span class="text-lg font-bold text-blue-400">{day.count}</span>
-												<span class="text-slate-400 text-[10px] uppercase tracking-wider">contributions</span>
-											</div>
-											
-											{#if !privacyMode || isAuthenticated}
-												{#if day.hasCheckin && day.workPlan}
-													<div class="text-[10px] text-slate-300 truncate max-w-[180px] border-l-2 border-blue-500/50 pl-2 italic">{day.workPlan}</div>
-												{/if}
-												{#if !day.hasCheckin}
-													<div class="text-[10px] text-slate-500 italic">No activity recorded</div>
-												{/if}
-											{:else}
-												<div class="text-[10px] text-slate-500 italic">Protected Content</div>
-											{/if}
-											
-											<div class="absolute top-full left-1/2 transform -translate-x-1/2 
-															w-0 h-0 border-l-4 border-r-4 border-t-4 
-															border-transparent border-t-slate-900/95 dark:border-t-slate-950/95">
+
+												<div class="font-medium mb-1 flex items-center gap-2">
+													<span class="text-lg font-bold text-slate-300">{day.count}</span>
+													<span class="text-slate-400 text-[10px] uppercase tracking-wider"
+														>contributions</span
+													>
 												</div>
+
+												{#if !privacyMode || isAuthenticated}
+													{#if day.hasCheckin && day.workPlan}
+														<div
+															class="text-[10px] text-slate-300 truncate max-w-[180px] border-l-2 border-slate-500/60 pl-2 italic"
+														>
+															{day.workPlan}
+														</div>
+													{/if}
+													{#if !day.hasCheckin}
+														<div class="text-[10px] text-slate-500 italic">
+															No activity recorded
+														</div>
+													{/if}
+												{:else}
+													<div class="text-[10px] text-slate-500 italic">Protected Content</div>
+												{/if}
+
+												<div
+													class="absolute top-full left-1/2 transform -translate-x-1/2
+															w-0 h-0 border-l-4 border-r-4 border-t-4
+															border-transparent border-t-slate-900/95 dark:border-t-slate-950/95"
+												/>
 											</div>
 										</div>
 									{/each}
@@ -578,38 +632,52 @@
 						</div>
 					</div>
 				</div>
-				
-				<div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[10px]">
+
+				<div
+					class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[10px]"
+				>
 					<div class="flex items-center gap-3">
-						<span class="text-slate-400 uppercase tracking-wider font-semibold text-[10px]">Level</span>
+						<span class="text-slate-400 uppercase tracking-wider font-semibold text-[10px]"
+							>Level</span
+						>
 						<div class="flex gap-[3px]">
-							<div class="w-[12px] h-[12px] bg-slate-100 dark:bg-slate-900 rounded-[2px] ring-1 ring-inset ring-slate-900/5 dark:ring-white/5"></div>
-							<div class="w-[12px] h-[12px] bg-blue-400 dark:bg-blue-900 rounded-[2px]"></div>
-							<div class="w-[12px] h-[12px] bg-blue-500 dark:bg-blue-800 rounded-[2px]"></div>
-							<div class="w-[12px] h-[12px] bg-blue-600 dark:bg-blue-700 rounded-[2px]"></div>
-							<div class="w-[12px] h-[12px] bg-blue-700 dark:bg-blue-600 rounded-[2px]"></div>
-							<div class="w-[12px] h-[12px] bg-blue-800 dark:bg-blue-500 rounded-[2px]"></div>
+							<div
+								class="w-[12px] h-[12px] bg-slate-100 dark:bg-slate-900 rounded-[2px] ring-1 ring-inset ring-slate-900/5 dark:ring-white/5"
+							/>
+							<div class="w-[12px] h-[12px] bg-slate-300 dark:bg-slate-800 rounded-[2px]" />
+							<div class="w-[12px] h-[12px] bg-slate-400 dark:bg-slate-700 rounded-[2px]" />
+							<div class="w-[12px] h-[12px] bg-slate-500 dark:bg-slate-600 rounded-[2px]" />
+							<div class="w-[12px] h-[12px] bg-slate-600 dark:bg-slate-500 rounded-[2px]" />
+							<div class="w-[12px] h-[12px] bg-slate-700 dark:bg-slate-400 rounded-[2px]" />
 						</div>
 					</div>
-					
+
 					<div class="flex items-center gap-4 text-slate-500 dark:text-slate-400">
 						<div class="flex items-center gap-1">
 							<span>Total</span>
-							<span class="font-mono font-bold text-slate-900 dark:text-white">{totalContributions}</span>
+							<span class="font-mono font-bold text-slate-900 dark:text-white"
+								>{totalContributions}</span
+							>
 						</div>
-						
+
 						{#if stats}
 							<div class="flex items-center gap-1">
 								<span>Active</span>
-								<span class="font-mono font-bold text-blue-600 dark:text-blue-400">{stats.checkedInDays}</span>
+								<span class="font-mono font-bold text-slate-700 dark:text-slate-300"
+									>{stats.checkedInDays}</span
+								>
 							</div>
 							<div class="flex items-center gap-1">
 								<span>Streak</span>
-								<span class="font-mono font-bold text-cyan-600 dark:text-cyan-400">{stats.currentStreak}</span>
+								<span class="font-mono font-bold text-stone-700 dark:text-stone-300"
+									>{stats.currentStreak}</span
+								>
 							</div>
 							<div class="flex items-center gap-1">
 								<span>Done</span>
-								<span class="font-mono font-bold text-emerald-600 dark:text-emerald-400">{stats.completionRate}%</span>
+								<span class="font-mono font-bold text-stone-700 dark:text-stone-300"
+									>{stats.completionRate}%</span
+								>
 							</div>
 						{/if}
 					</div>
@@ -622,49 +690,67 @@
 {#if showAuthModal}
 	<div class="fixed inset-0 z-[100] flex items-center justify-center p-4">
 		<!-- 背景遮罩 -->
-		<div 
+		<div
 			class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity cursor-pointer"
 			on:click={handleAuthClose}
-            on:keydown={(e) => e.key === 'Escape' && handleAuthClose()}
-            role="button"
-            tabindex="0"
-            aria-label="Close modal"
-		></div>
-		
+			on:keydown={(e) => e.key === 'Escape' && handleAuthClose()}
+			role="button"
+			tabindex="0"
+			aria-label="Close modal"
+		/>
+
 		<!-- 模态框内容 -->
-		<div class="relative w-full max-w-xs bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 transform transition-all scale-100">
+		<div
+			class="relative w-full max-w-xs bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 transform transition-all scale-100"
+		>
 			<div class="text-center mb-6">
-				<div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-4">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+				<div
+					class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 mb-4"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="lucide lucide-lock"
+						><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path
+							d="M7 11V7a5 5 0 0 1 10 0v4"
+						/></svg
+					>
 				</div>
 				<h3 class="text-lg font-bold text-slate-900 dark:text-white">访问受限</h3>
 				<p class="text-sm text-slate-500 dark:text-slate-400 mt-2">请输入密码以查看详细内容</p>
 			</div>
-			
+
 			<div class="space-y-4">
 				<div>
-					<input 
-						type="password" 
+					<input
+						type="password"
 						bind:value={authPassword}
 						placeholder="输入密码"
-						class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-slate-900 dark:text-white placeholder-slate-400"
+						class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-transparent outline-none transition-all text-slate-900 dark:text-white placeholder-slate-400"
 						on:keydown={(e) => e.key === 'Enter' && handleAuthSubmit()}
-                        use:focus
+						use:focus
 					/>
 					{#if authError}
 						<p class="text-red-500 text-xs mt-2 text-center">{authError}</p>
 					{/if}
 				</div>
-				
+
 				<div class="flex gap-3">
-					<button 
+					<button
 						class="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
 						on:click={handleAuthClose}
 					>
 						取消
 					</button>
-					<button 
-						class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg shadow-blue-500/20 transition-colors"
+					<button
+						class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-300 rounded-lg shadow-lg shadow-slate-900/10 transition-colors"
 						on:click={handleAuthSubmit}
 					>
 						解锁
@@ -679,7 +765,7 @@
 	bind:isOpen={showModal}
 	bind:selectedDate
 	bind:existingCheckin={selectedCheckin}
-	focusTasksConfig={focusTasksConfig}
+	{focusTasksConfig}
 	on:close={handleModalClose}
 	on:save={handleModalSave}
 	on:delete={handleModalDelete}

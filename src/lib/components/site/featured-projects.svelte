@@ -14,18 +14,22 @@
 	<!-- Header Section -->
 	<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 md:container">
 		<div class="space-y-4">
-			<div class="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-mono text-sm">
+			<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 font-mono text-sm">
 				<Code2 size={16} />
 				<span>~/projects/featured</span>
 			</div>
 			<h2 class="text-3xl md:text-5xl font-bold tracking-tight text-primary">
-				Selected <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">Works</span>
+				Selected
+				<span
+					class="text-transparent bg-clip-text bg-gradient-to-r from-slate-800 to-stone-500 dark:from-slate-100 dark:to-stone-400"
+					>Works</span
+				>
 			</h2>
 			<p class="text-muted-foreground text-lg max-w-xl">
 				A collection of projects where I turn coffee into code and ideas into reality.
 			</p>
 		</div>
-		
+
 		<div class="hidden md:block">
 			<Button href="/projects" variant="ghost" class="group text-base">
 				View Archive
@@ -44,10 +48,8 @@
 			{/each}
 		</Masonry>
 	</div>
-	
+
 	<div class="md:hidden px-6">
-		<Button href="/projects" variant="outline" class="w-full">
-			View Archive
-		</Button>
+		<Button href="/projects" variant="outline" class="w-full">View Archive</Button>
 	</div>
 </div>

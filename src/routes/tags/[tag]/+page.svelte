@@ -12,13 +12,13 @@
 	<div class="flex flex-col items-center justify-center gap-5">
 		<div>
 			<h1
-				class="text-3xl font-bold text-transparent bg-gradient-to-r from-primary to-gray-400 bg-clip-text md:text-5xl"
+				class="text-3xl font-bold text-transparent bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text dark:from-slate-100 dark:to-slate-400 md:text-5xl"
 			>
 				{data.currentTag}
 			</h1>
 		</div>
 		<div
-			class="h-[0.3px] -mt-3 md:hidden w-[50%] bg-gradient-to-r from-gray-400 via-primary to-gray-400"
+			class="h-[0.3px] -mt-3 md:hidden w-[50%] bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-700"
 		/>
 		<div class="md:hidden no-highlight">
 			<ComboBox tags={data.tags} currentTag={data.currentTag} postsByTag={data.postsByTag} />

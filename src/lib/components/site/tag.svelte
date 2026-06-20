@@ -44,17 +44,17 @@
 {#if count > 0}
 	<a
 		{href}
-		class="border border-muted-foreground/50 hover:border-primary rounded-md flex"
+		class="border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 rounded-md flex bg-slate-50/80 dark:bg-zinc-900/80 transition-colors"
 		on:mouseenter={() => (hover = true)}
 		on:mouseleave={() => (hover = false)}
 	>
-		<h1 class="px-2 text-base font-medium text-primary">
+		<h1 class="px-2 text-base font-medium text-slate-600 dark:text-slate-300">
 			{tag}
 		</h1>
 		<p
 			class={cn(
-				'bg-zinc-200 dark:bg-zinc-700/80 rounded-r-[5px] px-2 border-l border-muted-foreground/50',
-				hover && 'border-primary'
+				'bg-slate-200/80 dark:bg-zinc-800 rounded-r-[5px] px-2 border-l border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 transition-colors',
+				hover && 'border-slate-400 dark:border-slate-500'
 			)}
 		>
 			{count}
@@ -63,7 +63,14 @@
 	<!-- {:else if shallow}
 	<Badge class={cn('rounded', className)} {href} on:click={showModal}>{tag}</Badge> -->
 {:else}
-	<Badge on:click={showModal} class={cn('rounded', className)} {href}>{tag}</Badge>
+	<Badge
+		on:click={showModal}
+		class={cn(
+			'rounded border-slate-300 bg-slate-100 text-slate-600 hover:bg-slate-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700',
+			className
+		)}
+		{href}>{tag}</Badge
+	>
 {/if}
 
 <Dialog.Root

@@ -274,7 +274,7 @@
 		<div class="text-center mb-8"> 
 			<label for="password" class="text-xl">请输入密码查看内容</label>
 			<input type="password" id="password" bind:value={password} class="mt-2 mb-4 p-2 border rounded" />
-			<button on:click={handlePasswordInput} class="px-4 py-2 bg-blue-500 text-white rounded">解密</button>
+			<button on:click={handlePasswordInput} class="px-4 py-2 bg-slate-800 hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-300 text-white rounded transition-colors">解密</button>
 			{#if !isPasswordCorrect}
 				<div class="text-red-500 mt-2">密码错误，请重新输入。</div>
 			{/if}

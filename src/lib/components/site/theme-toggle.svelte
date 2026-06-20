@@ -10,7 +10,11 @@
 
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger asChild let:builder class="md:w-9 md:h-9 p-0">
-		<Button builders={[builder]} variant="ghost" class="w-9 p-0 rounded-lg">
+		<Button
+			builders={[builder]}
+			variant="ghost"
+			class="w-9 p-0 rounded-lg bg-white/55 dark:bg-slate-950/45 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-sm shadow-slate-900/5 hover:bg-white/70 dark:hover:bg-slate-900/70"
+		>
 			<Sun class="h-5 w-5 rotate-0 scale-100 transition-all dark:-roate-90 dark:scale-0" />
 			<Moon
 				class="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"

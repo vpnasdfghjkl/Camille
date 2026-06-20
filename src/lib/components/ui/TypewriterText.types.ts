@@ -7,6 +7,8 @@ export interface TypewriterTextProps {
 	className?: string;
 	cursorColor?: string;
 	startDelay?: number;
+	loop?: boolean;
+	keepCursor?: boolean;
 }
 
 // 使用示例和配置预设

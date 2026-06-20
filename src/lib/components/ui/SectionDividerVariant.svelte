@@ -8,17 +8,17 @@
 <div class="flex justify-center mb-16 {className}">
 	<div class="flex items-center space-x-4">
 		{#if variant === 'blue'}
-			<div class="w-12 h-px bg-gradient-to-r from-transparent to-blue-500/30"></div>
-			<div class="w-2 h-2 rounded-full bg-blue-500/40"></div>
-			<div class="w-24 h-px bg-gradient-to-r from-blue-500/30 via-blue-500/20 to-blue-500/30"></div>
-			<div class="w-2 h-2 rounded-full bg-cyan-400/40"></div>
-			<div class="w-12 h-px bg-gradient-to-l from-transparent to-blue-500/30"></div>
+			<div class="w-12 h-px bg-gradient-to-r from-transparent to-slate-400/30" />
+			<div class="w-2 h-2 rounded-full bg-slate-400/40" />
+			<div class="w-24 h-px bg-gradient-to-r from-slate-400/30 via-slate-400/20 to-slate-400/30" />
+			<div class="w-2 h-2 rounded-full bg-stone-400/40" />
+			<div class="w-12 h-px bg-gradient-to-l from-transparent to-slate-400/30" />
 		{:else}
-			<div class="w-12 h-px bg-gradient-to-r from-transparent to-cyan-400/30"></div>
-			<div class="w-2 h-2 rounded-full bg-cyan-400/40"></div>
-			<div class="w-24 h-px bg-gradient-to-r from-cyan-400/30 via-blue-500/20 to-cyan-400/30"></div>
-			<div class="w-2 h-2 rounded-full bg-blue-500/40"></div>
-			<div class="w-12 h-px bg-gradient-to-l from-transparent to-cyan-400/30"></div>
+			<div class="w-12 h-px bg-gradient-to-r from-transparent to-stone-400/30" />
+			<div class="w-2 h-2 rounded-full bg-stone-400/40" />
+			<div class="w-24 h-px bg-gradient-to-r from-stone-400/30 via-slate-400/20 to-stone-400/30" />
+			<div class="w-2 h-2 rounded-full bg-slate-400/40" />
+			<div class="w-12 h-px bg-gradient-to-l from-transparent to-stone-400/30" />
 		{/if}
 	</div>
 </div>

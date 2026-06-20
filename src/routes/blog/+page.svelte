@@ -12,7 +12,7 @@
 		<div class="flex flex-col items-center px-2 gap-5">
 			<div class="flex flex-col items-center gap-2">
 				<h1
-					class="text-5xl font-bold text-transparent bg-gradient-to-r from-primary to-gray-400 bg-clip-text"
+					class="text-5xl font-bold text-transparent bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text dark:from-slate-100 dark:to-slate-400"
 				>
 					Blogs
 				</h1>
@@ -30,7 +30,7 @@
 		<div>
 			<div class="flex flex-col items-center justify-center gap-2">
 				<h1
-					class="text-5xl font-bold text-transparent bg-gradient-to-r from-primary to-gray-400 bg-clip-text"
+					class="text-5xl font-bold text-transparent bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text dark:from-slate-100 dark:to-slate-400"
 				>
 					Blog Series
 				</h1>
