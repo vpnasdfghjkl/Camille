@@ -6,12 +6,20 @@
 export interface ContributionDay {
 	/** 日期 */
 	date: Date | string;
-	/** 贡献级别 (0-4) */
+	/** 贡献级别 (0-5)，由当天任务清单完成率计算 */
 	level: number;
-	/** 是否为完美日 (level === 4) */
+	/** 是否完成当天全部任务 */
 	isAllCompleted?: boolean;
 	/** 贡献数量 */
 	count: number;
+	/** 当天任务清单完成数 */
+	completedTasks?: number;
+	/** 当天任务清单总数 */
+	totalTasks?: number;
+	/** 当天任务清单完成率 (0-100) */
+	completionRate?: number;
+	/** 当天任务清单 */
+	taskList?: ContributionTask[];
 	/** 是否为今天 */
 	isToday?: boolean;
 	/** 月份 (0-11) */
@@ -20,14 +28,23 @@ export interface ContributionDay {
 	day?: number;
 	/** 是否有打卡记录 */
 	hasCheckin?: boolean;
-	/** 起床时间 */
+	/** Legacy optional time field, no longer shown in the entry form */
 	wakeUpTime?: string;
-	/** 工作开始时间 */
+	/** Legacy optional time field, no longer shown in the entry form */
 	workStartTime?: string;
 	/** 工作计划 */
 	workPlan?: string;
 	/** 备注 */
 	notes?: string;
+}
+
+/** 单日任务清单项 */
+export interface ContributionTask {
+	id?: string;
+	text: string;
+	completed: boolean;
+	startTime?: string;
+	duration?: number;
 }
 
 /** 月份标签 */

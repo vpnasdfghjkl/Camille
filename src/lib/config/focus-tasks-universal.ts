@@ -3,32 +3,32 @@ import type { FocusTaskConfig } from './focus-tasks';
 // 默认任务配置
 const DEFAULT_FOCUS_TASKS: FocusTaskConfig[] = [
 	{
-		id: 'graduation-project',
-		name: 'Graduation Project',
-		icon: '🎓',
-		description: '毕业设计项目相关工作',
-		category: 'academic',
+		id: 'familiar-domain',
+		name: 'familiar domain',
+		icon: '🛠️',
+		description: '熟悉领域内的持续推进',
+		category: 'work',
 		priority: 1
 	},
 	{
-		id: 'coding-logical',
-		name: 'Coding/Logical',
-		icon: '💻',
-		description: '编程和逻辑思维训练',
-		category: 'development',
+		id: 'new-exploration',
+		name: 'new exploration',
+		icon: '🧭',
+		description: '对新领域的探索和试验',
+		category: 'exploration',
 		priority: 2
 	},
 	{
 		id: 'running',
-		name: 'Running',
+		name: 'running',
 		icon: '🏃',
 		description: '跑步锻炼，保持健康',
 		category: 'health',
 		priority: 3
 	},
 	{
-		id: 'reading-learning',
-		name: 'Reading/Learning',
+		id: 'reading',
+		name: 'reading',
 		icon: '📚',
 		description: '阅读学习新知识',
 		category: 'learning',
@@ -36,9 +36,9 @@ const DEFAULT_FOCUS_TASKS: FocusTaskConfig[] = [
 	},
 	{
 		id: 'communication',
-		name: 'Communication',
+		name: 'communication',
 		icon: '💬',
-		description: '团队沟通协作',
+		description: '沟通协作',
 		category: 'social',
 		priority: 5
 	}
@@ -51,9 +51,8 @@ function isFileSystemAvailable(): boolean {
 		if (process.env.VERCEL || process.env.NETLIFY) {
 			return false;
 		}
-		
-		return typeof process !== 'undefined' && 
-		       typeof process.cwd === 'function';
+
+		return typeof process !== 'undefined' && typeof process.cwd === 'function';
 	} catch {
 		return false;
 	}
@@ -90,17 +89,19 @@ export async function loadFocusTasksConfig(): Promise<FocusTaskConfig[]> {
 			try {
 				const { promises: fs } = await import('fs');
 				const { join } = await import('path');
-				
+
 				const configPath = join(process.cwd(), 'static', 'config', 'focus-tasks.json');
 				const configFile = await fs.readFile(configPath, 'utf-8');
 				const config = JSON.parse(configFile);
-				
+
 				if (config.focusTasks && Array.isArray(config.focusTasks)) {
 					console.log(`✅ 从文件加载任务配置: ${config.focusTasks.length} 个任务`);
 					return config.focusTasks;
 				}
 			} catch (error) {
-				console.log(`⚠️ 从文件加载配置失败: ${error instanceof Error ? error.message : String(error)}`);
+				console.log(
+					`⚠️ 从文件加载配置失败: ${error instanceof Error ? error.message : String(error)}`
+				);
 			}
 		}
 

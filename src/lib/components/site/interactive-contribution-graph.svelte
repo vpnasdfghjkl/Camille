@@ -4,9 +4,8 @@
 	import type { CalendarState, DailyCheckin } from '$lib/types/checkin';
 	import CheckinModal from './checkin-modal.svelte';
 	import LoadingAnimation from '$lib/components/ui/loading-animation.svelte';
-	import { loadFocusTasksConfig } from '$lib/config/focus-tasks-universal';
-	import type { FocusTaskConfig } from '$lib/config/focus-tasks';
-	import { Trophy, Calendar, Target, Zap, Activity, CheckCircle2 } from 'lucide-svelte';
+	import { getFocusTasksConfigAsync, type FocusTaskConfig } from '$lib/config/focus-tasks';
+	import { Activity, CheckCircle2 } from 'lucide-svelte';
 
 	// Props
 	export let title = 'Activity Log';
@@ -43,7 +42,7 @@
 	let totalContributions = 0;
 	let currentYear = new Date().getFullYear();
 
-	// 焦点任务配置
+	// Direction tag config
 	let focusTasksConfig: FocusTaskConfig[] = [];
 
 	// Focus action
@@ -60,8 +59,8 @@
 	}
 
 	onMount(async () => {
-		focusTasksConfig = await loadFocusTasksConfig();
-		console.log('✅ 加载焦点任务配置:', focusTasksConfig);
+		focusTasksConfig = await getFocusTasksConfigAsync();
+		console.log('✅ 加载 direction 配置:', focusTasksConfig);
 
 		if (useRealData) {
 			await loadRealData();
@@ -113,8 +112,8 @@
 			focusAreas: focusTasksConfig.map((task, index) => ({
 				name: task.name,
 				icon: task.icon,
-				count: [120, 90, 60, 30, 20, 10][index] || 10,
-				percentage: [40, 30, 20, 10, 5, 5][index] || 5
+				count: [35, 34, 24, 13, 6][index] || 0,
+				percentage: [31, 30, 21, 12, 6][index] || 0
 			})),
 			dateRange: {
 				start: getLocalDateStr(new Date(Date.now() - 364 * 24 * 60 * 60 * 1000)),
@@ -135,24 +134,32 @@
 		for (let i = 0; i < 365; i++) {
 			const currentDate = new Date(startDate);
 			currentDate.setDate(startDate.getDate() + i);
-			const totalFocusTasks = getTotalFocusTasks();
-			const level = Math.random() > 0.3 ? Math.floor(Math.random() * (totalFocusTasks + 1)) : 0;
-			const count = level;
-			const hasCheckin = level > 0;
+			const totalTasks = Math.random() > 0.3 ? Math.floor(Math.random() * 6) + 1 : 0;
+			const completedTasks = totalTasks > 0 ? Math.floor(Math.random() * (totalTasks + 1)) : 0;
+			const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+			const level = getLevelFromCompletionRate(completionRate);
+			const hasCheckin = totalTasks > 0;
 			const dateStr = getLocalDateStr(currentDate);
+			const taskList = Array.from({ length: totalTasks }, (_, taskIndex) => ({
+				id: `mock-${i}-${taskIndex}`,
+				text: `Task ${taskIndex + 1}`,
+				completed: taskIndex < completedTasks
+			}));
 
 			contributions.push({
 				date: dateStr,
 				level,
-				count,
-				isAllCompleted: level >= totalFocusTasks,
+				count: completedTasks,
+				completedTasks,
+				totalTasks,
+				completionRate,
+				taskList,
+				isAllCompleted: totalTasks > 0 && completedTasks === totalTasks,
 				isToday: dateStr === todayStr,
 				month: currentDate.getMonth(),
 				day: currentDate.getDate(),
 				hasCheckin,
 				workPlan: hasCheckin ? `模拟工作计划 ${i + 1}` : undefined,
-				wakeUpTime: hasCheckin && Math.random() > 0.5 ? '07:00' : undefined,
-				workStartTime: hasCheckin && Math.random() > 0.5 ? '09:00' : undefined,
 				notes: hasCheckin && Math.random() > 0.7 ? '模拟备注' : undefined
 			});
 		}
@@ -302,16 +309,20 @@
 		return labels;
 	}
 
-	function getTotalFocusTasks(): number {
-		return focusTasksConfig.length || 6;
+	function getLevelFromCompletionRate(completionRate = 0): number {
+		if (completionRate <= 0) return 0;
+		if (completionRate < 25) return 1;
+		if (completionRate < 50) return 2;
+		if (completionRate < 75) return 3;
+		if (completionRate < 100) return 4;
+		return 5;
 	}
 
-	function getContributionClass(level: number, isAllCompleted?: boolean): string {
-		if (isAllCompleted) {
+	function getContributionClass(completionRate = 0, isAllCompleted?: boolean): string {
+		if (isAllCompleted || completionRate >= 100) {
 			return 'bg-stone-600 dark:bg-stone-300 ring-1 ring-stone-300/60 dark:ring-stone-500/60';
 		}
-		const maxLevel = getTotalFocusTasks();
-		switch (level) {
+		switch (getLevelFromCompletionRate(completionRate)) {
 			case 0:
 				return 'bg-slate-100 dark:bg-slate-900';
 			case 1:
@@ -325,9 +336,6 @@
 			case 5:
 				return 'bg-slate-700 dark:bg-slate-400';
 			default:
-				if (level >= maxLevel) {
-					return 'bg-slate-700 dark:bg-slate-400';
-				}
 				return 'bg-slate-100 dark:bg-slate-900/80';
 		}
 	}
@@ -403,19 +411,23 @@
 			});
 
 			if (existingIndex >= 0) {
-				const totalFocusTasks = focusTasksConfig.length || 6;
-				const completedTasks = checkin.focusTasksCompleted || 0;
-				const isAllCompleted = completedTasks >= totalFocusTasks;
+				const taskList = parseTaskList(checkin.workPlan);
+				const totalTasks = taskList.length;
+				const completedTasks = taskList.filter((task) => task.completed).length;
+				const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+				const isAllCompleted = totalTasks > 0 && completedTasks === totalTasks;
 
 				contributions[existingIndex] = {
 					...contributions[existingIndex],
-					level: completedTasks,
+					level: getLevelFromCompletionRate(completionRate),
 					count: completedTasks,
-					isAllCompleted: isAllCompleted,
+					completedTasks,
+					totalTasks,
+					completionRate,
+					taskList,
+					isAllCompleted,
 					hasCheckin: true,
 					workPlan: checkin.workPlan,
-					wakeUpTime: checkin.wakeUpTime,
-					workStartTime: checkin.workStartTime,
 					notes: checkin.notes
 				};
 			}
@@ -444,10 +456,12 @@
 					...contributions[existingIndex],
 					level: 0,
 					count: 0,
+					completedTasks: 0,
+					totalTasks: 0,
+					completionRate: 0,
+					taskList: undefined,
 					hasCheckin: false,
 					workPlan: undefined,
-					wakeUpTime: undefined,
-					workStartTime: undefined,
 					notes: undefined
 				};
 			}
@@ -463,11 +477,35 @@
 	function getTooltipText(day: ContributionDay): string {
 		const dateStr = typeof day.date === 'string' ? day.date : day.date.toLocaleDateString('zh-CN');
 		if (day.hasCheckin) {
-			return `${dateStr}\n完成 ${day.count} 个Focus任务${
-				day.workPlan ? '\n计划: ' + day.workPlan : ''
-			}`;
+			return `${dateStr}\n完成 ${day.completedTasks || 0}/${day.totalTasks || 0} 个任务 (${
+				day.completionRate || 0
+			}%)`;
 		}
 		return `${dateStr}\n点击添加打卡记录`;
+	}
+
+	function parseTaskList(plan: string) {
+		if (!plan) return [];
+		return plan
+			.split('\n')
+			.map((line, index) => {
+				const trimmed = line.trim();
+				const match = trimmed.match(/^- \[([ xX])\]\s+(.*)$/);
+				if (!match) return null;
+
+				let text = match[2].trim();
+				const timeMatch = text.match(/^\[(\d{1,2}:\d{2})\]\s*(?:\[(\d+)m\])?\s*(.*)$/);
+				if (timeMatch) {
+					text = timeMatch[3]?.trim() || text;
+				}
+
+				return {
+					id: `task-${index}`,
+					text,
+					completed: match[1].toLowerCase() === 'x'
+				};
+			})
+			.filter((task): task is { id: string; text: string; completed: boolean } => Boolean(task));
 	}
 
 	$: focusAreas = calendarState?.focusAreas || [];
@@ -559,14 +597,14 @@
 										<div class="relative group h-[14px] w-[12px]">
 											<button
 												class="block w-3 h-3 {getContributionClass(
-													day.level,
+													day.completionRate,
 													day.isAllCompleted
 												)} rounded-[3px] transition-all duration-200 relative hover:ring-2 hover:ring-slate-400/50 hover:scale-125 hover:z-20 cursor-pointer
 													   {day.isToday
 													? 'ring-2 ring-offset-2 ring-offset-white dark:ring-offset-slate-950 ring-stone-500 dark:ring-stone-300 z-20 scale-110'
 													: ''}"
 												on:click={() => handleDayClick(day)}
-												aria-label="{day.date}: {day.count} tasks"
+												aria-label={getTooltipText(day)}
 											/>
 
 											<div
@@ -596,18 +634,38 @@
 												</div>
 
 												<div class="font-medium mb-1 flex items-center gap-2">
-													<span class="text-lg font-bold text-slate-300">{day.count}</span>
+													<span class="text-lg font-bold text-slate-300"
+														>{day.completionRate || 0}%</span
+													>
 													<span class="text-slate-400 text-[10px] uppercase tracking-wider"
-														>contributions</span
+														>done</span
 													>
 												</div>
 
 												{#if !privacyMode || isAuthenticated}
-													{#if day.hasCheckin && day.workPlan}
-														<div
-															class="text-[10px] text-slate-300 truncate max-w-[180px] border-l-2 border-slate-500/60 pl-2 italic"
-														>
-															{day.workPlan}
+													{#if day.hasCheckin && day.taskList?.length}
+														<div class="mt-2 space-y-1 max-w-[220px]">
+															{#each day.taskList.slice(0, 4) as task}
+																<div class="flex items-start gap-1.5 text-[10px] text-slate-300">
+																	<span
+																		class={task.completed ? 'text-stone-300' : 'text-slate-500'}
+																	>
+																		{task.completed ? '✓' : '○'}
+																	</span>
+																	<span
+																		class="truncate {task.completed
+																			? 'line-through text-slate-500'
+																			: ''}"
+																	>
+																		{task.text}
+																	</span>
+																</div>
+															{/each}
+															{#if day.taskList.length > 4}
+																<div class="text-[10px] text-slate-500">
+																	+{day.taskList.length - 4} more
+																</div>
+															{/if}
 														</div>
 													{/if}
 													{#if !day.hasCheckin}
@@ -638,7 +696,7 @@
 				>
 					<div class="flex items-center gap-3">
 						<span class="text-slate-400 uppercase tracking-wider font-semibold text-[10px]"
-							>Level</span
+							>Completion</span
 						>
 						<div class="flex gap-[3px]">
 							<div
@@ -654,7 +712,7 @@
 
 					<div class="flex items-center gap-4 text-slate-500 dark:text-slate-400">
 						<div class="flex items-center gap-1">
-							<span>Total</span>
+							<span>Done</span>
 							<span class="font-mono font-bold text-slate-900 dark:text-white"
 								>{totalContributions}</span
 							>
@@ -674,7 +732,7 @@
 								>
 							</div>
 							<div class="flex items-center gap-1">
-								<span>Done</span>
+								<span>Rate</span>
 								<span class="font-mono font-bold text-stone-700 dark:text-stone-300"
 									>{stats.completionRate}%</span
 								>

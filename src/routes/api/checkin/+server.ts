@@ -3,6 +3,13 @@ import type { RequestHandler } from './$types';
 import { supabaseCheckinService } from '$lib/server/supabase-checkin-service';
 import type { DailyCheckin, ApiResponse } from '$lib/types/checkin';
 
+function normalizeFocusTasksCompleted(focusTasks: unknown, focusTasksCompleted: unknown): number {
+	const taskCount = Array.isArray(focusTasks) ? focusTasks.length : 0;
+	const completedCount = Number(focusTasksCompleted || 0);
+	const maxCount = taskCount > 0 ? taskCount : completedCount;
+	return Math.max(0, Math.min(maxCount, completedCount));
+}
+
 // 生成ID
 function generateId(): string {
 	return `checkin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -37,13 +44,12 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		// 获取所有打卡记录
 		const allCheckins = await supabaseCheckinService.getAllCheckins();
-			
+
 		const allResponse: ApiResponse<DailyCheckin[]> = {
 			success: true,
 			data: allCheckins
 		};
 		return json(allResponse);
-
 	} catch (error) {
 		console.error('❌ API 获取数据失败:', error);
 		const errorResponse: ApiResponse = {
@@ -58,7 +64,8 @@ export const GET: RequestHandler = async ({ url }) => {
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body = await request.json();
-		const { date, wakeUpTime, workStartTime, workPlan, focusTasks, focusTasksCompleted, notes } = body;
+		const { date, wakeUpTime, workStartTime, workPlan, focusTasks, focusTasksCompleted, notes } =
+			body;
 
 		// 验证必需字段
 		if (!date || !workPlan) {
@@ -84,7 +91,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// 检查是否已存在记录
 		const existingCheckin = await supabaseCheckinService.getCheckin(formattedDate);
-		
+
 		if (existingCheckin) {
 			// 更新现有记录
 			const updatedCheckin: DailyCheckin = {
@@ -93,13 +100,13 @@ export const POST: RequestHandler = async ({ request }) => {
 				workStartTime,
 				workPlan,
 				focusTasks: focusTasks || [],
-				focusTasksCompleted: Math.max(0, Math.min(6, focusTasksCompleted || 0)),
+				focusTasksCompleted: normalizeFocusTasksCompleted(focusTasks, focusTasksCompleted),
 				notes,
 				updatedAt: now
 			};
-			
+
 			const result = await supabaseCheckinService.saveCheckin(updatedCheckin);
-			
+
 			const response: ApiResponse<DailyCheckin> = {
 				success: true,
 				data: result,
@@ -115,14 +122,14 @@ export const POST: RequestHandler = async ({ request }) => {
 				workStartTime,
 				workPlan,
 				focusTasks: focusTasks || [],
-				focusTasksCompleted: Math.max(0, Math.min(6, focusTasksCompleted || 0)),
+				focusTasksCompleted: normalizeFocusTasksCompleted(focusTasks, focusTasksCompleted),
 				notes,
 				createdAt: now,
 				updatedAt: now
 			};
-			
+
 			const result = await supabaseCheckinService.saveCheckin(newCheckin);
-			
+
 			const response: ApiResponse<DailyCheckin> = {
 				success: true,
 				data: result,
@@ -130,10 +137,9 @@ export const POST: RequestHandler = async ({ request }) => {
 			};
 			return json(response);
 		}
-
 	} catch (error) {
 		console.error('❌ 保存打卡记录时发生错误:', error);
-		
+
 		const errorResponse: ApiResponse = {
 			success: false,
 			error: error instanceof Error ? error.message : '保存打卡记录失败'
@@ -146,7 +152,7 @@ export const POST: RequestHandler = async ({ request }) => {
 export const DELETE: RequestHandler = async ({ url }) => {
 	try {
 		const date = url.searchParams.get('date');
-		
+
 		if (!date) {
 			const errorResponse: ApiResponse = {
 				success: false,
@@ -156,7 +162,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 		}
 
 		const deleted = await supabaseCheckinService.deleteCheckin(date);
-		
+
 		if (deleted) {
 			const successResponse: ApiResponse = {
 				success: true,
@@ -170,7 +176,6 @@ export const DELETE: RequestHandler = async ({ url }) => {
 			};
 			return json(errorResponse, { status: 404 });
 		}
-
 	} catch (error) {
 		console.error('❌ 删除打卡记录失败:', error);
 		const errorResponse: ApiResponse = {

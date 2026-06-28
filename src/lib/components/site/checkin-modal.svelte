@@ -9,14 +9,12 @@
 		Trash2,
 		Plus,
 		Calendar,
-		Clock,
 		CheckCircle2,
-		Circle,
 		AlertCircle,
 		Quote,
 		Target
 	} from 'lucide-svelte';
-	import { fade, fly, slide } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 
 	// Props
 	export let isOpen = false;
@@ -32,21 +30,14 @@
 	}>();
 
 	// 表单数据
-	let wakeUpTime = '';
-	let workStartTime = '';
 	// Plan Items for Checklist
 	type PlanItem = {
 		id: string;
 		text: string;
 		completed: boolean;
-		startTime?: string;
-		duration?: number;
-		isEditingTime?: boolean; // UI state
 	};
 	let planItems: PlanItem[] = [];
 	let newPlanText = '';
-	let newPlanStartTime = '';
-	let newPlanDuration = 30; // Default duration
 
 	let focusTasksCompleted = 0;
 	let notes = '';
@@ -54,9 +45,9 @@
 	// 表单状态
 	let isLoading = false;
 	let errorMessage = '';
-	let activeTab: 'plan' | 'note' = 'plan'; // For mobile or focusing
+	let showNote = false;
 
-	// Focus任务选项
+	// Direction tag options
 	let focusTasks: Array<{
 		id: string;
 		name: string;
@@ -68,6 +59,28 @@
 	// ----------------------------------------------------------------
 	// Helper Functions
 	// ----------------------------------------------------------------
+
+	const LEGACY_FOCUS_TASK_ALIASES: Record<string, string> = {
+		'graduation-project': 'familiar-domain',
+		'Graduation Project': 'familiar-domain',
+		'coding-logical': 'familiar-domain',
+		'Coding/Logical': 'familiar-domain',
+		paper: 'familiar-domain',
+		Paper: 'familiar-domain',
+		'work-project': 'familiar-domain',
+		'work project': 'familiar-domain',
+		'Work Project': 'familiar-domain',
+		'familiar domain': 'familiar-domain',
+		'familiar-domain': 'familiar-domain',
+		'new exploration': 'new-exploration',
+		'new-exploration': 'new-exploration',
+		running: 'running',
+		Running: 'running',
+		'reading-learning': 'reading',
+		'Reading/Learning': 'reading',
+		communication: 'communication',
+		Communication: 'communication'
+	};
 
 	function generateId() {
 		return Math.random().toString(36).substr(2, 9);
@@ -93,25 +106,16 @@
 				const completed = line.startsWith('- [x] ');
 				let content = line.replace(/^- \[[ x]\] /, '').trim();
 
-				// Extract time and duration [HH:MM] [XXm]
-				let startTime = '';
-				let duration = 0;
-
-				// Regex for [HH:MM] [XXm] or just [HH:MM]
+				// Strip legacy [HH:MM] [XXm] prefixes, but no longer expose them in the UI.
 				const timeMatch = content.match(/^\[(\d{1,2}:\d{2})\]\s*(?:\[(\d+)m\])?\s*(.*)/);
 				if (timeMatch) {
-					startTime = timeMatch[1];
-					duration = timeMatch[2] ? parseInt(timeMatch[2]) : 0;
 					content = timeMatch[3] || '';
 				}
 
 				return {
 					id: generateId(),
 					text: content || line,
-					completed,
-					startTime,
-					duration,
-					isEditingTime: false
+					completed
 				};
 			});
 	}
@@ -120,9 +124,7 @@
 	function serializeWorkPlan(items: PlanItem[]): string {
 		return items
 			.map((item) => {
-				const timeStr = item.startTime ? `[${item.startTime}] ` : '';
-				const durationStr = item.duration ? `[${item.duration}m] ` : '';
-				return `- [${item.completed ? 'x' : ' '}] ${timeStr}${durationStr}${item.text}`;
+				return `- [${item.completed ? 'x' : ' '}] ${item.text}`;
 			})
 			.join('\n');
 	}
@@ -167,86 +169,32 @@
 	// ----------------------------------------------------------------
 
 	function loadCheckinData(checkin: DailyCheckin) {
-		wakeUpTime = checkin.wakeUpTime || '';
-		workStartTime = checkin.workStartTime || '';
 		planItems = parseWorkPlan(checkin.workPlan || '');
 
 		if (checkin.focusTasks && checkin.focusTasks.length > 0) {
 			focusTasks = focusTasks.map((task) => {
-				const savedTask = checkin.focusTasks.find((t) => t.id === task.id);
+				const savedTask = checkin.focusTasks.find((t) => {
+					const canonicalId =
+						LEGACY_FOCUS_TASK_ALIASES[t.id] || LEGACY_FOCUS_TASK_ALIASES[t.name] || t.id;
+					return canonicalId === task.id;
+				});
 				return { ...task, isCompleted: savedTask?.isCompleted || false };
 			});
 		}
 
 		focusTasksCompleted = checkin.focusTasksCompleted || 0;
 		notes = checkin.notes || '';
-
-		updateNextStartTime();
+		showNote = Boolean(notes);
 	}
 
 	function resetForm() {
-		wakeUpTime = '';
-		workStartTime = '';
 		planItems = [];
 		newPlanText = '';
-		newPlanStartTime = '';
-		newPlanDuration = 30;
 		focusTasks = focusTasks.map((task) => ({ ...task, isCompleted: false }));
 		focusTasksCompleted = 0;
 		notes = '';
 		errorMessage = '';
-		activeTab = 'plan';
-	}
-
-	function getCurrentTime(): string {
-		const now = new Date();
-		const hours = now.getHours().toString().padStart(2, '0');
-		const minutes = now.getMinutes().toString().padStart(2, '0');
-		return `${hours}:${minutes}`;
-	}
-
-	function setCurrentTime(field: 'wake' | 'work') {
-		const currentTime = getCurrentTime();
-		if (field === 'wake') wakeUpTime = currentTime;
-		else workStartTime = currentTime;
-	}
-
-	// Time Calculation Helper
-	function addMinutesToTime(time: string, minutes: number): string {
-		if (!time) return '';
-		const [h, m] = time.split(':').map(Number);
-		const date = new Date();
-		date.setHours(h, m + minutes);
-		return date.toTimeString().slice(0, 5);
-	}
-
-	function getEndTime(start: string, duration: number) {
-		if (!start || !duration) return '';
-		return addMinutesToTime(start, duration);
-	}
-
-	// Auto-set next start time helper
-	function updateNextStartTime() {
-		// Find last item with time
-		const sortedItems = [...planItems]
-			.filter((i) => i.startTime)
-			.sort((a, b) => a.startTime!.localeCompare(b.startTime!));
-
-		if (sortedItems.length > 0) {
-			const lastItem = sortedItems[sortedItems.length - 1];
-			if (lastItem.startTime) {
-				const duration = lastItem.duration || 0;
-				// +10 min buffer
-				newPlanStartTime = addMinutesToTime(lastItem.startTime, duration + 10);
-			}
-		} else if (workStartTime) {
-			newPlanStartTime = workStartTime;
-		}
-	}
-
-	// Initialize start time when workStartTime changes (only if empty)
-	$: if (workStartTime && planItems.length === 0 && !newPlanStartTime) {
-		newPlanStartTime = workStartTime;
+		showNote = false;
 	}
 
 	// Plan Item Management
@@ -255,10 +203,7 @@
 		const timeRegex = /^(\d{1,2}[:：]\d{2})\s/;
 		const match = newPlanText.match(timeRegex);
 		if (match) {
-			const parsedTime = match[1].replace('：', ':').padStart(5, '0'); // Normalize
 			newPlanText = newPlanText.replace(timeRegex, '');
-			// Update the bound startTime as well if smart parsed
-			newPlanStartTime = parsedTime;
 		}
 	}
 
@@ -269,23 +214,11 @@
 			{
 				id: generateId(),
 				text: newPlanText.trim(),
-				completed: false,
-				startTime: newPlanStartTime,
-				duration: newPlanDuration,
-				isEditingTime: false
+				completed: false
 			}
 		];
 
-		// Smart sort by start time
-		planItems.sort((a, b) => {
-			if (a.startTime && b.startTime) return a.startTime.localeCompare(b.startTime);
-			if (a.startTime) return -1;
-			if (b.startTime) return 1;
-			return 0;
-		});
-
 		newPlanText = '';
-		updateNextStartTime();
 	}
 
 	function removePlanItem(id: string) {
@@ -296,14 +229,6 @@
 		planItems = planItems.map((item) =>
 			item.id === id ? { ...item, completed: !item.completed } : item
 		);
-	}
-
-	function editTime(id: string) {
-		planItems = planItems.map((i) => (i.id === id ? { ...i, isEditingTime: true } : i));
-	}
-
-	function saveTime(id: string) {
-		planItems = planItems.map((i) => (i.id === id ? { ...i, isEditingTime: false } : i));
 	}
 
 	// Auto-resize action for textarea
@@ -361,8 +286,6 @@
 		try {
 			const checkinData = {
 				date: selectedDate,
-				wakeUpTime: wakeUpTime || undefined,
-				workStartTime: workStartTime || undefined,
 				workPlan: serializeWorkPlan(planItems),
 				focusTasks: focusTasks,
 				focusTasksCompleted: focusTasks.filter((task) => task.isCompleted).length,
@@ -431,7 +354,9 @@
 		aria-modal="true"
 	>
 		<!-- Backdrop -->
-		<div
+		<button
+			type="button"
+			aria-label="Close modal"
 			class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
 			on:click={closeModal}
 			transition:fade={{ duration: 200 }}
@@ -439,7 +364,7 @@
 
 		<!-- Modal Container -->
 		<div
-			class="relative w-full max-w-5xl h-[85vh] bg-white dark:bg-slate-950 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden"
+			class="relative w-full max-w-3xl h-[85vh] bg-white dark:bg-slate-950 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden"
 			transition:fly={{ y: 20, duration: 300 }}
 		>
 			<!-- Header -->
@@ -476,322 +401,130 @@
 			</div>
 
 			<!-- Main Content -->
-			<div class="flex-1 overflow-hidden flex flex-col lg:flex-row">
-				<!-- Left Sidebar / Top Section (Time & Focus) -->
-				<div
-					class="w-full lg:w-80 bg-slate-50/50 dark:bg-slate-900/30 border-b lg:border-b-0 lg:border-r border-slate-100 dark:border-slate-800 flex flex-col overflow-y-auto"
-				>
-					<div class="p-6 space-y-8">
-						<!-- Time Settings -->
-						<div class="space-y-4">
+			<div class="flex-1 overflow-y-auto bg-white dark:bg-slate-950">
+				<div class="p-5 sm:p-6 lg:p-8 space-y-6">
+					<section class="space-y-3">
+						<div class="flex items-center justify-between">
 							<h3
 								class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2"
 							>
-								<Clock size={12} /> Time Log
+								<Target size={12} /> Direction
 							</h3>
-							<div class="grid grid-cols-2 lg:grid-cols-1 gap-4">
-								<div
-									class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm"
+							<span
+								class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full"
+							>
+								{focusTasks.filter((t) => t.isCompleted).length}/{focusTasks.length}
+							</span>
+						</div>
+						<div class="flex flex-wrap gap-2">
+							{#each focusTasks as task}
+								<label
+									class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors
+									{task.isCompleted
+										? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 border-slate-900 dark:border-slate-100'
+										: 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'}"
 								>
-									<label class="text-xs text-slate-500 mb-1.5 block">Wake Up</label>
-									<div class="flex gap-2">
-										<input
-											type="time"
-											bind:value={wakeUpTime}
-											class="flex-1 bg-transparent text-sm font-medium text-slate-900 dark:text-white outline-none"
-										/>
-										<button
-											on:click={() => setCurrentTime('wake')}
-											class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 text-xs font-bold px-1"
-											>NOW</button
-										>
-									</div>
-								</div>
-								<div
-									class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm"
-								>
-									<label class="text-xs text-slate-500 mb-1.5 block">Work Start</label>
-									<div class="flex gap-2">
-										<input
-											type="time"
-											bind:value={workStartTime}
-											class="flex-1 bg-transparent text-sm font-medium text-slate-900 dark:text-white outline-none"
-										/>
-										<button
-											on:click={() => setCurrentTime('work')}
-											class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 text-xs font-bold px-1"
-											>NOW</button
-										>
-									</div>
-								</div>
-							</div>
+									<input type="checkbox" bind:checked={task.isCompleted} class="sr-only" />
+									<span class="text-sm">{task.icon}</span>
+									<span class="text-sm font-medium">{task.name}</span>
+								</label>
+							{/each}
+						</div>
+					</section>
+
+					<section class="space-y-3">
+						<div class="flex items-center justify-between">
+							<h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+								<span class="text-slate-400">#</span> Tasks
+							</h3>
+							<span class="text-xs text-slate-400">
+								{planItems.filter((i) => i.completed).length}/{planItems.length} Done
+							</span>
 						</div>
 
-						<!-- Focus Tasks -->
-						<div class="space-y-4">
-							<div class="flex items-center justify-between">
-								<h3
-									class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2"
+						<div
+							class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden"
+						>
+							<div
+								class="p-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center gap-2"
+							>
+								<Plus size={18} class="text-slate-400" />
+								<input
+									type="text"
+									bind:value={newPlanText}
+									placeholder="Add a task..."
+									class="flex-1 p-1 bg-transparent outline-none text-slate-900 dark:text-white placeholder-slate-400"
+									on:keydown={handlePlanKeydown}
+								/>
+								<button
+									on:click={() => addPlanItem()}
+									disabled={!newPlanText.trim()}
+									class="px-3 py-1.5 text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
 								>
-									<Target size={12} /> Focus Areas
-								</h3>
-								<span
-									class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full"
-								>
-									{focusTasks.filter((t) => t.isCompleted).length}/{focusTasks.length}
-								</span>
+									ADD
+								</button>
 							</div>
-							<div class="space-y-2">
-								{#each focusTasks as task}
-									<label
-										class="flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer group
-										{task.isCompleted
-											? 'bg-slate-100/70 dark:bg-slate-800/40 border-slate-300 dark:border-slate-700'
-											: 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'}"
+
+							<div class="max-h-[360px] overflow-y-auto p-2 space-y-1">
+								{#if planItems.length === 0}
+									<div class="p-8 text-center text-slate-400 text-sm italic">No tasks yet.</div>
+								{/if}
+								{#each planItems as item, index (item.id)}
+									<div
+										class="group flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors"
 									>
-										<div class="relative flex items-center justify-center">
-											<input type="checkbox" bind:checked={task.isCompleted} class="peer sr-only" />
-											<div
-												class="w-5 h-5 rounded-md border-2 border-slate-300 dark:border-slate-600 peer-checked:bg-slate-800 peer-checked:border-slate-800 dark:peer-checked:bg-slate-200 dark:peer-checked:border-slate-200 transition-all flex items-center justify-center text-white dark:peer-checked:text-slate-900"
-											>
-												<CheckCircle2 size={12} class="opacity-0 peer-checked:opacity-100" />
-											</div>
-										</div>
-										<div class="flex-1 min-w-0">
-											<div class="flex items-center gap-2">
-												<span class="text-base">{task.icon}</span>
-												<span
-													class="text-sm font-medium text-slate-700 dark:text-slate-200 {task.isCompleted
-														? 'text-slate-900 dark:text-slate-100'
-														: ''}"
-												>
-													{task.name}
-												</span>
-											</div>
-										</div>
-									</label>
+										<button
+											class="min-w-[1.25rem] h-5 rounded border-2 flex items-center justify-center transition-all
+											{item.completed
+												? 'bg-slate-800 border-slate-800 text-white dark:bg-slate-200 dark:border-slate-200 dark:text-slate-900'
+												: 'border-slate-300 dark:border-slate-600 hover:border-slate-500'}"
+											on:click={() => togglePlanItem(item.id)}
+										>
+											{#if item.completed} <CheckCircle2 size={12} /> {/if}
+										</button>
+
+										<input
+											type="text"
+											bind:value={planItems[index].text}
+											class="flex-1 min-w-0 bg-transparent outline-none text-sm text-slate-700 dark:text-slate-300 {item.completed
+												? 'line-through text-slate-400'
+												: ''}"
+										/>
+
+										<button
+											on:click={() => removePlanItem(item.id)}
+											class="text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+										>
+											<Trash2 size={16} />
+										</button>
+									</div>
 								{/each}
 							</div>
 						</div>
-					</div>
-				</div>
+					</section>
 
-				<!-- Right Main Content -->
-				<div class="flex-1 flex flex-col h-full bg-white dark:bg-slate-950">
-					<!-- Tabs (Mobile only mostly, but good for structure) -->
-					<div class="flex border-b border-slate-100 dark:border-slate-800 lg:hidden">
+					<section class="space-y-3">
 						<button
-							class="flex-1 py-3 text-sm font-medium border-b-2 transition-colors {activeTab ===
-							'plan'
-								? 'border-slate-800 text-slate-900 dark:border-slate-200 dark:text-slate-100'
-								: 'border-transparent text-slate-500'}"
-							on:click={() => (activeTab = 'plan')}
+							on:click={() => (showNote = !showNote)}
+							class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
 						>
-							Plan & Todo
+							<Quote size={16} class="text-slate-400" />
+							{showNote ? 'Hide daily note' : 'Add daily note'}
 						</button>
-						<button
-							class="flex-1 py-3 text-sm font-medium border-b-2 transition-colors {activeTab ===
-							'note'
-								? 'border-slate-800 text-slate-900 dark:border-slate-200 dark:text-slate-100'
-								: 'border-transparent text-slate-500'}"
-							on:click={() => (activeTab = 'note')}
-						>
-							Daily Note
-						</button>
-					</div>
 
-					<!-- Content Area -->
-					<div class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-8">
-						<!-- Plan Section -->
-						<div class="{activeTab === 'plan' ? 'block' : 'hidden lg:block'} space-y-4">
-							<div class="flex items-center justify-between">
-								<h3
-									class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"
-								>
-									<span class="text-slate-400">#</span> Daily Plan
-								</h3>
-								<span class="text-xs text-slate-400"
-									>{planItems.filter((i) => i.completed).length}/{planItems.length} Done</span
-								>
-							</div>
-
+						{#if showNote}
 							<div
-								class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden"
+								class="relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/30"
 							>
-								<!-- Input -->
-								<div
-									class="p-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 gap-3"
-								>
-									<div class="flex items-center gap-2 mb-2">
-										<div
-											class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg px-2 py-1"
-										>
-											<Clock size={14} class="text-slate-400" />
-											<input
-												type="time"
-												bind:value={newPlanStartTime}
-												class="bg-transparent border-none outline-none text-xs font-mono text-slate-600 dark:text-slate-300 w-20"
-											/>
-										</div>
-										<div
-											class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg px-2 py-1"
-										>
-											<span class="text-xs text-slate-400 font-mono">Duration:</span>
-											<input
-												type="number"
-												bind:value={newPlanDuration}
-												min="5"
-												step="5"
-												class="bg-transparent border-none outline-none text-xs font-mono text-slate-600 dark:text-slate-300 w-12 text-center"
-											/>
-											<span class="text-xs text-slate-400">m</span>
-										</div>
-									</div>
-
-									<div class="flex items-center gap-2">
-										<Plus size={20} class="text-slate-400" />
-										<input
-											type="text"
-											bind:value={newPlanText}
-											placeholder="Add a new task..."
-											class="flex-1 p-1 bg-transparent outline-none text-slate-900 dark:text-white placeholder-slate-400"
-											on:keydown={handlePlanKeydown}
-										/>
-										<button
-											on:click={() => addPlanItem()}
-											disabled={!newPlanText.trim()}
-											class="px-3 py-1.5 text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
-										>
-											ADD
-										</button>
-									</div>
-								</div>
-
-								<!-- List -->
-								<div class="max-h-[300px] overflow-y-auto p-2 space-y-1">
-									{#if planItems.length === 0}
-										<div class="p-8 text-center text-slate-400 text-sm italic">
-											No tasks yet. Start planning your day!
-										</div>
-									{/if}
-									{#each planItems as item, index (item.id)}
-										<div
-											class="group flex items-start gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors animate-in slide-in-from-top-1 duration-200"
-										>
-											<button
-												class="mt-0.5 min-w-[1.25rem] h-5 rounded border-2 flex items-center justify-center transition-all
-												{item.completed
-													? 'bg-slate-800 border-slate-800 text-white dark:bg-slate-200 dark:border-slate-200 dark:text-slate-900'
-													: 'border-slate-300 dark:border-slate-600 hover:border-slate-500'}"
-												on:click={() => togglePlanItem(item.id)}
-											>
-												{#if item.completed} <CheckCircle2 size={12} /> {/if}
-											</button>
-
-											<div class="flex-1 min-w-0 flex flex-col gap-0.5">
-												<div class="flex items-center gap-2 h-6">
-													{#if item.isEditingTime}
-														<div
-															class="flex items-center gap-2 bg-white dark:bg-slate-900 rounded p-0.5 border border-slate-300 dark:border-slate-700 shadow-sm z-10"
-														>
-															<input
-																type="time"
-																bind:value={planItems[index].startTime}
-																class="text-[10px] font-mono bg-transparent border-none outline-none text-slate-900 dark:text-white"
-																on:blur={() => saveTime(item.id)}
-																on:keydown={(e) => e.key === 'Enter' && saveTime(item.id)}
-																use:focus
-															/>
-															<div class="h-3 w-[1px] bg-slate-200 dark:bg-slate-700" />
-															<div class="flex items-center gap-0.5">
-																<input
-																	type="number"
-																	bind:value={planItems[index].duration}
-																	class="text-[10px] font-mono bg-transparent border-none outline-none w-8 text-center text-slate-900 dark:text-white"
-																	min="5"
-																	step="5"
-																	on:blur={() => saveTime(item.id)}
-																	on:keydown={(e) => e.key === 'Enter' && saveTime(item.id)}
-																/>
-																<span class="text-[10px] text-slate-400">m</span>
-															</div>
-														</div>
-													{:else}
-														<button
-															class="flex items-center gap-1.5 group/time-badge hover:bg-slate-100 dark:hover:bg-slate-800 rounded px-1 -ml-1 transition-colors cursor-pointer"
-															on:click={() => editTime(item.id)}
-															title="Click to edit time"
-														>
-															{#if item.startTime}
-																<span
-																	class="text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded"
-																>
-																	{item.startTime} - {getEndTime(
-																		item.startTime,
-																		item.duration || 0
-																	)}
-																</span>
-																{#if item.duration}
-																	<span class="text-[10px] text-slate-400 font-mono">
-																		({item.duration}m)
-																	</span>
-																{/if}
-															{:else}
-																<span
-																	class="text-[10px] text-slate-300 dark:text-slate-600 hover:text-slate-500 dark:hover:text-slate-300 transition-colors flex items-center gap-1"
-																>
-																	<Clock size={12} /> Add time
-																</span>
-															{/if}
-														</button>
-													{/if}
-												</div>
-												<input
-													type="text"
-													bind:value={planItems[index].text}
-													class="bg-transparent outline-none text-sm text-slate-700 dark:text-slate-300 w-full {item.completed
-														? 'line-through text-slate-400'
-														: ''}"
-												/>
-											</div>
-
-											<button
-												on:click={() => removePlanItem(item.id)}
-												class="text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-											>
-												<Trash2 size={16} />
-											</button>
-										</div>
-									{/each}
-								</div>
-							</div>
-						</div>
-
-						<!-- Note Section -->
-						<div
-							class="{activeTab === 'note' ? 'block' : 'hidden lg:block'} space-y-4 flex flex-col"
-						>
-							<h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-								<Quote size={18} class="text-slate-500 fill-slate-500/10" /> Daily Note
-							</h3>
-
-							<div
-								class="relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-yellow-50/50 dark:bg-slate-900/30 min-h-[300px]"
-							>
-								<!-- Notebook Lines Background (Repeat) -->
-								<div
-									class="absolute inset-0 pointer-events-none opacity-10 dark:opacity-5 bg-[linear-gradient(transparent_23px,#000_24px)] bg-[size:100%_24px] rounded-2xl"
-								/>
-
 								<textarea
 									bind:value={notes}
-									placeholder="Write your thoughts, reflections, or anything you learned today..."
-									class="w-full min-h-[300px] p-6 bg-transparent resize-none outline-none text-slate-700 dark:text-slate-300 leading-[24px] font-serif placeholder:text-slate-400/50 block rounded-2xl"
+									placeholder="Optional note..."
+									class="w-full min-h-[140px] p-4 bg-transparent resize-none outline-none text-slate-700 dark:text-slate-300 leading-6 placeholder:text-slate-400/60 block rounded-2xl"
 									use:autoresize
 								/>
 							</div>
-						</div>
-					</div>
+						{/if}
+					</section>
 				</div>
 			</div>
 

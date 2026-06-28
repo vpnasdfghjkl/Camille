@@ -6,17 +6,17 @@
 export interface DailyCheckin {
 	id: string;
 	date: string; // YYYY-MM-DD 格式
-	wakeUpTime?: string; // HH:MM 格式
-	workStartTime?: string; // HH:MM 格式
+	wakeUpTime?: string; // legacy optional time field
+	workStartTime?: string; // legacy optional time field
 	workPlan: string; // 当天工作计划
-	focusTasks: FocusTask[]; // 6个focus任务的完成情况
-	focusTasksCompleted: number; // 完成的focus任务数量 (0-6)
+	focusTasks: FocusTask[]; // direction 标记情况
+	focusTasksCompleted: number; // 标记的 direction 数量
 	notes?: string; // 额外备注
 	createdAt: string; // ISO时间戳
 	updatedAt: string; // ISO时间戳
 }
 
-/** Focus任务类型 */
+/** Direction tag type */
 export interface FocusTask {
 	id: string;
 	name: string;
