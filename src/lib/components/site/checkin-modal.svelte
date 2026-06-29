@@ -46,6 +46,7 @@
 	let isLoading = false;
 	let errorMessage = '';
 	let showNote = false;
+	$: hasNote = notes.trim().length > 0;
 
 	// Direction tag options
 	let focusTasks: Array<{
@@ -184,7 +185,7 @@
 
 		focusTasksCompleted = checkin.focusTasksCompleted || 0;
 		notes = checkin.notes || '';
-		showNote = Boolean(notes);
+		showNote = false;
 	}
 
 	function resetForm() {
@@ -503,13 +504,19 @@
 						</div>
 					</section>
 
-					<section class="space-y-3">
+					<section class={showNote ? 'space-y-3' : ''}>
 						<button
 							on:click={() => (showNote = !showNote)}
 							class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
 						>
 							<Quote size={16} class="text-slate-400" />
 							{showNote ? 'Hide daily note' : 'Add daily note'}
+							{#if hasNote && !showNote}
+								<span
+									class="h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500"
+									aria-label="Daily note has content"
+								/>
+							{/if}
 						</button>
 
 						{#if showNote}
